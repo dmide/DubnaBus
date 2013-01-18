@@ -1,13 +1,16 @@
 package ru.ratadubna.dubnabus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
@@ -20,6 +23,7 @@ public class MenuFragment extends SherlockFragment implements
 	private ListView lv;
 	private Button but;
 	private ArrayList<Integer> idArray = new ArrayList<Integer>();
+	private SparseBooleanArray positionHide = new SparseBooleanArray();
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,11 +49,12 @@ public class MenuFragment extends SherlockFragment implements
 	public void onItemClick(android.widget.AdapterView<?> parent, View v,
 			int position, long id) {
 		CheckedTextView tv = (CheckedTextView) v.findViewById(R.id.checkView);
-		toggle(tv);
+		positionHide.put(position, !tv.isChecked());
+		tv.setChecked(!tv.isChecked());
 	}
 
 	public void toggle(CheckedTextView v) {
-		v.setChecked(!v.isChecked());
+		
 	}
 
 	public void onClick(View v) {
@@ -60,8 +65,47 @@ public class MenuFragment extends SherlockFragment implements
 			}
 		}
 		Intent i = new Intent(getActivity(), DubnaBusActivity.class);
-		i.putExtra("idList", idArray);
+		i.putExtra("idArray", idArray);
 		startActivity(i);
 	}
 
+	private class MenuItemsAdapter extends ArrayAdapter<BusRoutes> {
+		private ArrayList<BusRoutes> items;
+		private Context context;
+
+		public MenuItemsAdapter(Context context, int textViewResourceId,
+				ArrayList<BusRoutes> items) {
+			super(context, textViewResourceId, items);
+			this.context = context;
+			this.items = items;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View view = convertView;
+			if (view == null) {
+				LayoutInflater inflater = (LayoutInflater) context
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.row, null);
+			}
+
+			BusRoutes item = items.get(position);
+			if (item != null) {
+				CheckedTextView itemView = (CheckedTextView) view
+						.findViewById(R.id.checkView);
+				if (itemView != null) {
+					itemView.setText(item.GetDesc());
+					Boolean chk = positionHide.get(position);
+					if (chk != null)
+						itemView.setChecked(chk);
+				}
+			}
+
+			return view;
+		}
+
+		public int getCount() {
+			return items.size();
+		}
+
+	}
 }

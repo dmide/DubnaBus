@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,14 +30,14 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 	private ModelFragment model = null;
 	private static final String MODEL = "model";
 	private SharedPreferences prefs = null;
+	private ArrayList<Integer> idArray;
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
-		if (getIntent().hasExtra("idList")) {
-			ArrayList<Integer> idArray = getIntent().getIntegerArrayListExtra(
-					"idList");
+		if (getIntent().hasExtra("idArray")) {
+			idArray = getIntent().getIntegerArrayListExtra("idArray");
 			DrawRoutes(idArray);
 		}
 	}
@@ -95,8 +94,8 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 	void DrawRoutes(ArrayList<Integer> idArray) {
 		for (Integer id : idArray) {
 			GetRouteMapTask getRouteMapTask = new GetRouteMapTask(id);
-			ModelFragment.executeAsyncTask(getRouteMapTask, this
-					.getApplicationContext());
+			ModelFragment.executeAsyncTask(getRouteMapTask,
+					this.getApplicationContext());
 		}
 	}
 
