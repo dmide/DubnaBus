@@ -1,11 +1,12 @@
 package ru.ratadubna.dubnabus;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,20 +54,38 @@ public class MenuFragment extends SherlockFragment implements
 		tv.setChecked(!tv.isChecked());
 	}
 
-	public void toggle(CheckedTextView v) {
-		
-	}
-
 	public void onClick(View v) {
-		SparseBooleanArray sba = lv.getCheckedItemPositions();
-		for (int i = 0; i < sba.size(); i++) {
-			if (sba.valueAt(i)) {
-				idArray.add(BusRoutes.GetRoutes().get(sba.keyAt(i)).GetId());
+		for (int i = 0; i < positionHide.size(); i++) {
+			if (positionHide.valueAt(i)) {
+				idArray.add(BusRoutes.GetRoutes().get(positionHide.keyAt(i)).GetId());
 			}
 		}
 		Intent i = new Intent(getActivity(), DubnaBusActivity.class);
 		i.putExtra("idArray", idArray);
 		startActivity(i);
+	}
+
+	public void onPause() {
+
+		super.onPause();
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getActivity());
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
+			editor.putBoolean(i.toString(), positionHide.get(i, false));
+		}
+		editor.commit();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getActivity());
+		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
+			positionHide.put(i,
+					sharedPreferences.getBoolean(i.toString(), false));
+		}
 	}
 
 	private class MenuItemsAdapter extends ArrayAdapter<BusRoutes> {
@@ -108,4 +127,5 @@ public class MenuFragment extends SherlockFragment implements
 		}
 
 	}
+
 }
