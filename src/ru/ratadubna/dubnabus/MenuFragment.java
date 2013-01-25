@@ -23,8 +23,8 @@ public class MenuFragment extends SherlockFragment implements
 		android.widget.AdapterView.OnClickListener {
 	private ListView lv;
 	private Button but;
-	private ArrayList<Integer> idArray = new ArrayList<Integer>();
 	private SparseBooleanArray positionHide = new SparseBooleanArray();
+	private SharedPreferences prefs = null;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -55,36 +55,29 @@ public class MenuFragment extends SherlockFragment implements
 	}
 
 	public void onClick(View v) {
-		for (int i = 0; i < positionHide.size(); i++) {
-			if (positionHide.valueAt(i)) {
-				idArray.add(BusRoutes.GetRoutes().get(positionHide.keyAt(i)).GetId());
-			}
-		}
-		Intent i = new Intent(getActivity(), DubnaBusActivity.class);
-		i.putExtra("idArray", idArray);
-		startActivity(i);
+		startActivity(new Intent(getActivity(), DubnaBusActivity.class));
 	}
 
 	public void onPause() {
-
 		super.onPause();
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(getActivity());
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
+		SharedPreferences.Editor editor = prefs.edit();
+		Integer i = 0;
+		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
 			editor.putBoolean(i.toString(), positionHide.get(i, false));
+			editor.putInt("id_at_"+i.toString(), BusRoutes.GetRoutes().get(i).GetId());
 		}
+		editor.putInt(DubnaBusActivity.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		SharedPreferences sharedPreferences = PreferenceManager
+		prefs = PreferenceManager
 				.getDefaultSharedPreferences(getActivity());
 		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
 			positionHide.put(i,
-					sharedPreferences.getBoolean(i.toString(), false));
+					prefs.getBoolean(i.toString(), false));
 		}
 	}
 

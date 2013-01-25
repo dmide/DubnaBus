@@ -29,17 +29,19 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 	private GoogleMap mMap;
 	private ModelFragment model = null;
 	private static final String MODEL = "model";
+	public static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
-	private ArrayList<Integer> idArray;
+	private ArrayList<Integer> idArray = new ArrayList<Integer>();
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
-		if (getIntent().hasExtra("idArray")) {
-			idArray = getIntent().getIntegerArrayListExtra("idArray");
-			DrawRoutes(idArray);
+		for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
+			if (prefs.getBoolean(i.toString(), false))
+				idArray.add(prefs.getInt("id_at_"+i.toString(), 0));
 		}
+		DrawRoutes();
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 		this.prefs = prefs;
 	}
 
-	void DrawRoutes(ArrayList<Integer> idArray) {
+	void DrawRoutes() {
 		for (Integer id : idArray) {
 			GetRouteMapTask getRouteMapTask = new GetRouteMapTask(id);
 			ModelFragment.executeAsyncTask(getRouteMapTask,
