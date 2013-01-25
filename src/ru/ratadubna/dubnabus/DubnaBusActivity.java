@@ -162,6 +162,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 		page = page.replaceAll(",", ".");
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)"), pattern2 = Pattern
 				.compile("route-menu-item([0-9]+)");
+		
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
 		double lat, lng;
