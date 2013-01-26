@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseArray;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
@@ -58,7 +59,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 	private void setUpMapIfNeeded() {
 		if (mMap == null) {
 			SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager()
-			.findFragmentById(R.id.map);
+					.findFragmentById(R.id.map);
 			mapFrag.setRetainInstance(true);
 			mMap = mapFrag.getMap();
 			if (!model.mapRoutesLoaded) {
@@ -73,8 +74,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 				mapRoute.color(-(new Random().nextInt(2147483647)));
 				mMap.addPolyline(mapRoute);
 			}
-			for (MarkerOptions marker : model.getMarkers()) {
-				mMap.addMarker(marker);
+			SparseArray<MarkerOptions> markers = model.getMarkers();
+			for (int i = 0; i < markers.size(); i++) {
+				mMap.addMarker(markers.valueAt(i));
 			}
 		} else {
 			model.loadMapRoutes();

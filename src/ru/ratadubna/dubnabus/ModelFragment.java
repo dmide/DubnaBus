@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,7 +32,7 @@ public class ModelFragment extends SherlockFragment {
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
 	private ArrayList<PolylineOptions> mapRoutes = new ArrayList<PolylineOptions>();
-	private ArrayList<MarkerOptions> markers;
+	private SparseArray<MarkerOptions> markers = new SparseArray<MarkerOptions>();
 
 	void loadMapRoutes() {
 		GetRouteMapTask getRouteMapTask;
@@ -45,7 +46,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	ArrayList<MarkerOptions> getMarkers() {
+	SparseArray<MarkerOptions> getMarkers() {
 		return markers;
 	}
 
@@ -175,9 +176,9 @@ public class ModelFragment extends SherlockFragment {
 				}
 				String page = buf.toString();
 				page = page.replaceAll(",", ".");
-				PolylineOptions mapRoute = ParseMapRoute(page);
+				PolylineOptions mapRoute = parseMapRoute(page);
 				mapRoutes.add(mapRoute);
-				markers = ParseMapMarkers(page);
+				parseMapMarkers(page);
 				if (mapRoute == null || markers == null)
 					throw new Exception();
 			} catch (Exception e) {
@@ -200,7 +201,7 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				mapRoutesLoaded = true;
-				((DubnaBusActivity)getActivity()).drawRoutes();
+				((DubnaBusActivity) getActivity()).drawRoutes();
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",
 						e);
@@ -208,7 +209,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private PolylineOptions ParseMapRoute(String page) {
+	private PolylineOptions parseMapRoute(String page) {
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
@@ -224,14 +225,14 @@ public class ModelFragment extends SherlockFragment {
 		return mapRoute;
 	}
 
-	private ArrayList<MarkerOptions> ParseMapMarkers(String page) {
-		Pattern pattern = Pattern.compile("(.+[à-ÿÀ-ß()])");
+	private void parseMapMarkers(String page) {
+		Pattern pattern = Pattern.compile("(.+[à-ÿÀ-ß()]\\s[0-9]+)");
 		Pattern pattern2 = Pattern
-				.compile("([0-9]{2}.[0-9]+)\\s([0-9]{2}.[0-9]+)\\s(.+)");
+				.compile("([0-9]{2}.[0-9]+)\\s([0-9]{2}.[0-9]+)\\s([^0-9]+)\\s([0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		Matcher matcher2;
-		ArrayList<MarkerOptions> markers = new ArrayList<MarkerOptions>();
 		double lat, lng;
+		int id;
 		String desc;
 		while (matcher.find()) {
 			matcher2 = pattern2.matcher(matcher.group());
@@ -239,12 +240,15 @@ public class ModelFragment extends SherlockFragment {
 				lat = Double.parseDouble(matcher2.group(1));
 				lng = Double.parseDouble(matcher2.group(2));
 				desc = matcher2.group(3);
+				id = Integer.parseInt(matcher2.group(4));
 			} else
-				return null;
-			markers.add(new MarkerOptions().position(new LatLng(lat, lng))
-					.title(desc));
+				return;
+			if (markers.get(id) == null) {
+				markers.append(id,
+						new MarkerOptions().position(new LatLng(lat, lng))
+								.title(desc));
+			}
 		}
-		return markers;
 	}
 
 }
