@@ -43,6 +43,7 @@ public class MenuFragment extends SherlockFragment implements
 		lv.setOnItemClickListener(this);
 		but = (Button) result.findViewById(R.id.but);
 		but.setOnClickListener(this);
+		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		return (result);
 	}
 
@@ -64,7 +65,8 @@ public class MenuFragment extends SherlockFragment implements
 		Integer i = 0;
 		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
 			editor.putBoolean(i.toString(), positionHide.get(i, false));
-			editor.putInt("id_at_"+i.toString(), BusRoutes.GetRoutes().get(i).GetId());
+			editor.putInt("id_at_" + i.toString(), BusRoutes.GetRoutes().get(i)
+					.GetId());
 		}
 		editor.putInt(DubnaBusActivity.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
@@ -73,11 +75,8 @@ public class MenuFragment extends SherlockFragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		prefs = PreferenceManager
-				.getDefaultSharedPreferences(getActivity());
 		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
-			positionHide.put(i,
-					prefs.getBoolean(i.toString(), false));
+			positionHide.put(i, prefs.getBoolean(i.toString(), false));
 		}
 	}
 

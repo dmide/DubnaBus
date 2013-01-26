@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -23,24 +24,20 @@ import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 public class DubnaBusActivity extends SherlockFragmentActivity {
 	private GoogleMap mMap;
 	private ModelFragment model = null;
-	private static final String MODEL = "model";
-	public static final String ROUTES_ARRAY_SIZE = "routes_array_size";
+	static final String MODEL = "model";
+	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
-	private ArrayList<Integer> idArray = new ArrayList<Integer>();
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
-		for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
-			if (prefs.getBoolean(i.toString(), false))
-				idArray.add(prefs.getInt("id_at_"+i.toString(), 0));
-		}
 		DrawRoutes();
 	}
 
@@ -57,10 +54,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 		}
 		setContentView(R.layout.main);
 		setUpMapIfNeeded();
-		if (mMap != null) {
-			// The Map is verified. It is now safe to manipulate the map.
-
-		}
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	}
 
 	@Override
@@ -89,15 +83,15 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	void setupData(SharedPreferences prefs) {
-		this.prefs = prefs;
-	}
-
 	void DrawRoutes() {
-		for (Integer id : idArray) {
-			GetRouteMapTask getRouteMapTask = new GetRouteMapTask(id);
-			ModelFragment.executeAsyncTask(getRouteMapTask,
-					this.getApplicationContext());
+		GetRouteMapTask getRouteMapTask;
+		for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
+			if (prefs.getBoolean(i.toString(), false)) {
+				getRouteMapTask = new GetRouteMapTask(prefs.getInt(
+						"id_at_" + i.toString(), 0));
+				ModelFragment.executeAsyncTask(getRouteMapTask,
+						this.getApplicationContext());
+			}
 		}
 	}
 
@@ -105,6 +99,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 		private Exception e = null;
 		private int id;
 		private PolylineOptions mapRoute;
+		private ArrayList<MarkerOptions> markers;
 
 		public GetRouteMapTask(int id) {
 			this.id = id;
@@ -127,8 +122,11 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 				while ((line = reader.readLine()) != null) {
 					buf.append(line + "\n");
 				}
-				mapRoute = ParseMapRoute(buf.toString());
-				if (mapRoute == null)
+				String page = buf.toString();
+				page = page.replaceAll(",", ".");
+				mapRoute = ParseMapRoute(page);
+				markers = ParseMapMarkers(page);
+				if (mapRoute == null || markers == null)
 					throw new Exception();
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
@@ -151,6 +149,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 			if (e == null) {
 				mapRoute.color(-(new Random().nextInt(2147483647)));
 				mMap.addPolyline(mapRoute);
+				for (MarkerOptions marker : markers) {
+					mMap.addMarker(marker);
+				}
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",
 						e);
@@ -159,10 +160,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 	}
 
 	private PolylineOptions ParseMapRoute(String page) {
-		page = page.replaceAll(",", ".");
-		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)"), pattern2 = Pattern
-				.compile("route-menu-item([0-9]+)");
-		
+		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
 		double lat, lng;
@@ -174,7 +172,29 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 				return null;
 			mapRoute.add(new LatLng(lat, lng));
 		}
-		matcher = pattern.matcher(page);
 		return mapRoute;
+	}
+
+	private ArrayList<MarkerOptions> ParseMapMarkers(String page) {
+		Pattern pattern = Pattern.compile("(.+[à-ÿÀ-ß()])");
+		Pattern pattern2 = Pattern
+				.compile("([0-9]{2}.[0-9]+)\\s([0-9]{2}.[0-9]+)\\s(.+)");
+		Matcher matcher = pattern.matcher(page);
+		Matcher matcher2;
+		ArrayList<MarkerOptions> markers = new ArrayList<MarkerOptions>();
+		double lat, lng;
+		String desc;
+		while (matcher.find()) {
+			matcher2 = pattern2.matcher(matcher.group());
+			if (matcher2.find()) {
+				lat = Double.parseDouble(matcher2.group(1));
+				lng = Double.parseDouble(matcher2.group(2));
+				desc = matcher2.group(3);
+			} else
+				return null;
+			markers.add(new MarkerOptions().position(new LatLng(lat, lng))
+					.title(desc));
+		}
+		return markers;
 	}
 }

@@ -10,19 +10,15 @@ import java.util.regex.Pattern;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class ModelFragment extends SherlockFragment {
 	private ContentsLoadTask contentsTask = null;
-	private SharedPreferences prefs = null;
-	private PrefsLoadTask prefsTask = null;
 	private boolean routesLoaded = false;
 	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1";
 
@@ -34,19 +30,12 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	synchronized private void deliverModel() {
-		if (prefs != null && !BusRoutes.GetRoutes().isEmpty()) {
-			((DubnaBusActivity) getActivity()).setupData(prefs);
-		} else {
-			if (prefs == null && prefsTask == null) {
-				prefsTask = new PrefsLoadTask();
-				executeAsyncTask(prefsTask, getActivity()
-						.getApplicationContext());
-			} else if (BusRoutes.GetRoutes().isEmpty() && contentsTask == null) {
-				contentsTask = new ContentsLoadTask();
-				executeAsyncTask(contentsTask, getActivity()
-						.getApplicationContext());
-			}
+		if (BusRoutes.GetRoutes().isEmpty() && contentsTask == null) {
+			contentsTask = new ContentsLoadTask();
+			executeAsyncTask(contentsTask, getActivity()
+					.getApplicationContext());
 		}
+
 	}
 
 	@TargetApi(11)
@@ -79,7 +68,8 @@ public class ModelFragment extends SherlockFragment {
 					buf.append(line + "\n");
 				}
 				ParseRoutes(buf.toString());
-				if (!routesLoaded) throw new Exception();
+				if (!routesLoaded)
+					throw new Exception();
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
 						"Exception retrieving bus routes content", e);
@@ -109,42 +99,19 @@ public class ModelFragment extends SherlockFragment {
 
 	private void ParseRoutes(String page) {
 		Pattern pattern = Pattern.compile("<li(.*)</li>"), pattern2 = Pattern
-				.compile("route-menu-item([0-9]+)"), pattern3 = Pattern
-				.compile("title=\"Маршрут (.*)\" name");
+				.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name");
 		Matcher matcher = pattern.matcher(page);
 		Matcher matcher2;
-		String line;
 		int id;
 		while (matcher.find()) {
-			line = matcher.group();
-			matcher2 = pattern2.matcher(line);
-			if (matcher2.find()) 
+			matcher2 = pattern2.matcher(matcher.group());
+			if (matcher2.find()) {
 				id = Integer.parseInt(matcher2.group(1));
-			else return;
-			matcher2 = pattern3.matcher(line);
-			if (matcher2.find())
-				BusRoutes.Add(id, matcher2.group(1));
-			else return;
+				BusRoutes.Add(id, matcher2.group(2));
+			} else
+				return;
 		}
 		routesLoaded = true;
 	}
 
-	private class PrefsLoadTask extends AsyncTask<Context, Void, Void> {
-		SharedPreferences localPrefs = null;
-
-		@Override
-		protected Void doInBackground(Context... ctxt) {
-			localPrefs = PreferenceManager.getDefaultSharedPreferences(ctxt[0]);
-			localPrefs.getAll();
-			return (null);
-		}
-
-		@Override
-		public void onPostExecute(Void arg0) {
-			ModelFragment.this.prefs = localPrefs;
-			ModelFragment.this.prefsTask = null;
-			deliverModel();
-		}
-	}
-	
 }
