@@ -68,7 +68,7 @@ public class MenuFragment extends SherlockFragment implements
 			editor.putInt("id_at_" + i.toString(), BusRoutes.GetRoutes().get(i)
 					.GetId());
 		}
-		editor.putInt(DubnaBusActivity.ROUTES_ARRAY_SIZE, i);
+		editor.putInt(ModelFragment.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
 	}
 
