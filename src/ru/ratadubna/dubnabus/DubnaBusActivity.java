@@ -4,17 +4,18 @@ import java.util.Random;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.SparseArray;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class DubnaBusActivity extends SherlockFragmentActivity {
+public class DubnaBusActivity extends SherlockFragmentActivity implements OnMarkerClickListener {
 	private GoogleMap mMap;
 	private ModelFragment model = null;
 	static final String MODEL = "model";
@@ -62,24 +63,32 @@ public class DubnaBusActivity extends SherlockFragmentActivity {
 					.findFragmentById(R.id.map);
 			mapFrag.setRetainInstance(true);
 			mMap = mapFrag.getMap();
+			mMap.setInfoWindowAdapter(new ScheduleSnippetAdapter(getLayoutInflater()));
+			mMap.setOnMarkerClickListener(this);
 			if (!model.mapRoutesLoaded) {
-				drawRoutes();
+				model.loadMapRoutes();
 			}
 		}
 	}
 
-	void drawRoutes() {
-		if (model.mapRoutesLoaded) {
-			for (PolylineOptions mapRoute : model.getMapRoutes()) {
-				mapRoute.color(-(new Random().nextInt(2147483647)));
-				mMap.addPolyline(mapRoute);
-			}
-			SparseArray<MarkerOptions> markers = model.getMarkers();
-			for (int i = 0; i < markers.size(); i++) {
-				mMap.addMarker(markers.valueAt(i));
-			}
-		} else {
-			model.loadMapRoutes();
-		}
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		model.loadSchedule(marker);
+		return false;
+	}
+	
+	void addSchedule(String content, Marker marker){
+		marker.setSnippet(content);
+		marker.showInfoWindow();
+	}
+	
+	void addRoute(PolylineOptions mapRoute,int id){
+		mapRoute.color(-(new Random().nextInt(2147483647)));
+		mMap.addPolyline(mapRoute);
+		BusLocationReceiver.scheduleAlarm(getApplicationContext(),id);
+	}
+	
+	Marker addMarker(MarkerOptions maropt){
+		return mMap.addMarker(maropt);
 	}
 }

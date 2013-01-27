@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,22 +17,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 public class ModelFragment extends SherlockFragment {
 	private ContentsLoadTask contentsTask = null;
 	private boolean routesLoaded = false;
 	boolean mapRoutesLoaded = false;
 	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1";
+	private static final String MAP_ROUTES_URL = "http://ratadubna.ru/nav/d.php?o=2&m=";
+	private static final String SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
-	private ArrayList<PolylineOptions> mapRoutes = new ArrayList<PolylineOptions>();
-	private SparseArray<MarkerOptions> markers = new SparseArray<MarkerOptions>();
+	private HashMap<String, Integer> descArray = new HashMap<String, Integer>();
 
 	void loadMapRoutes() {
 		GetRouteMapTask getRouteMapTask;
@@ -46,12 +48,10 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	SparseArray<MarkerOptions> getMarkers() {
-		return markers;
-	}
-
-	ArrayList<PolylineOptions> getMapRoutes() {
-		return mapRoutes;
+	void loadSchedule(Marker marker) {
+		int id = descArray.get(marker.getTitle());
+		GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
+		executeAsyncTask(getScheduleTask, getActivity().getApplicationContext());
 	}
 
 	@Override
@@ -152,6 +152,7 @@ public class ModelFragment extends SherlockFragment {
 	private class GetRouteMapTask extends AsyncTask<Context, Void, Void> {
 		private Exception e = null;
 		private int id;
+		String page = "";
 
 		public GetRouteMapTask(int id) {
 			this.id = id;
@@ -161,8 +162,7 @@ public class ModelFragment extends SherlockFragment {
 		protected Void doInBackground(Context... ctxt) {
 			BufferedReader reader = null;
 			try {
-				URL url = new URL("http://ratadubna.ru/nav/d.php?o=2&m="
-						+ String.valueOf(id));
+				URL url = new URL(MAP_ROUTES_URL + String.valueOf(id));
 				HttpURLConnection c = (HttpURLConnection) url.openConnection();
 				c.setRequestMethod("GET");
 				c.setReadTimeout(15000);
@@ -174,13 +174,10 @@ public class ModelFragment extends SherlockFragment {
 				while ((line = reader.readLine()) != null) {
 					buf.append(line + "\n");
 				}
-				String page = buf.toString();
+				page = buf.toString();
 				page = page.replaceAll(",", ".");
-				PolylineOptions mapRoute = parseMapRoute(page);
-				mapRoutes.add(mapRoute);
-				parseMapMarkers(page);
-				if (mapRoute == null || markers == null)
-					throw new Exception();
+				if (!page.matches("(.+[à-ÿÀ-ß()]\\s[0-9]+)"))
+					throw new Exception("Connection problem");
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
 						"Exception retrieving bus routes content", e);
@@ -200,8 +197,9 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
+				parseMapMarkers(page);
+				parseMapRoute(page,id);
 				mapRoutesLoaded = true;
-				((DubnaBusActivity) getActivity()).drawRoutes();
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",
 						e);
@@ -209,7 +207,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private PolylineOptions parseMapRoute(String page) {
+	private void parseMapRoute(String page,int id) {
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
@@ -219,16 +217,16 @@ public class ModelFragment extends SherlockFragment {
 			if (matcher.find())
 				lng = Double.parseDouble(matcher.group());
 			else
-				return null;
+				return;
 			mapRoute.add(new LatLng(lat, lng));
 		}
-		return mapRoute;
+		((DubnaBusActivity) getActivity()).addRoute(mapRoute,id);
 	}
 
 	private void parseMapMarkers(String page) {
 		Pattern pattern = Pattern.compile("(.+[à-ÿÀ-ß()]\\s[0-9]+)");
 		Pattern pattern2 = Pattern
-				.compile("([0-9]{2}.[0-9]+)\\s([0-9]{2}.[0-9]+)\\s([^0-9]+)\\s([0-9]+)");
+				.compile("([0-9]{2}.[0-9]+)\\s+([0-9]{2}.[0-9]+)\\s+(.+)\\s+([0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		Matcher matcher2;
 		double lat, lng;
@@ -243,12 +241,94 @@ public class ModelFragment extends SherlockFragment {
 				id = Integer.parseInt(matcher2.group(4));
 			} else
 				return;
-			if (markers.get(id) == null) {
-				markers.append(id,
-						new MarkerOptions().position(new LatLng(lat, lng))
-								.title(desc));
+			if (!descArray.containsValue(id)) {
+				((DubnaBusActivity) getActivity())
+						.addMarker(new MarkerOptions().position(
+								new LatLng(lat, lng)).title(desc));
+				descArray.put(desc, id);
 			}
 		}
 	}
 
+	private class GetScheduleTask extends AsyncTask<Context, Void, Void> {
+		private Exception e = null;
+		private int id;
+		String page = "";
+		Marker marker;
+
+		public GetScheduleTask(int id, Marker marker) {
+			this.id = id;
+			this.marker = marker;
+		}
+
+		@Override
+		protected Void doInBackground(Context... ctxt) {
+			BufferedReader reader = null;
+			try {
+				URL url = new URL(SCHEDULE_URL + String.valueOf(id));
+				HttpURLConnection c = (HttpURLConnection) url.openConnection();
+				c.setRequestMethod("GET");
+				c.setReadTimeout(15000);
+				c.connect();
+				reader = new BufferedReader(new InputStreamReader(
+						c.getInputStream()));
+				StringBuilder buf = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					buf.append(line + "\n");
+				}
+				page = buf.toString();
+				page = page.replaceAll(",", ".");
+				if (!page.matches("(<li>.+</li>)"))
+					throw new Exception("Connection problem");
+			} catch (Exception e) {
+				Log.e(getClass().getSimpleName(),
+						"Exception retrieving bus schedule content", e);
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						Log.e(getClass().getSimpleName(),
+								"Exception closing HUC reader", e);
+					}
+				}
+			}
+			return (null);
+		}
+
+		@Override
+		public void onPostExecute(Void arg0) {
+			if (e == null) {
+				((DubnaBusActivity) getActivity()).addSchedule(
+						parseSchedule(page), marker);
+			} else {
+				Log.e(getClass().getSimpleName(), "Exception loading contents",
+						e);
+			}
+		}
+	}
+
+	private String parseSchedule(String page) {
+		Pattern pattern = Pattern.compile("(<li>.+</li>)");
+		Pattern pattern2 = Pattern.compile("([¹:\\d]+)");
+		Matcher matcher = pattern.matcher(page);
+		Matcher matcher2;
+		StringBuffer result = new StringBuffer();
+		String tmp;
+		while (matcher.find()) {
+			matcher2 = pattern2.matcher(matcher.group());
+			matcher2.find();
+			if ((tmp = matcher2.group()).length() == 3)
+				tmp+="&nbsp;&nbsp;";
+			result.append("<b>" + tmp + "</b> -");
+			matcher2.find();
+			result.append("<font  color=\"green\">" + matcher2.group() + "</font>");
+			while (matcher2.find()) {
+				result.append(" " + matcher2.group());
+			}
+			result.append("<br />");
+		}
+		return result.toString();
+	}
 }
