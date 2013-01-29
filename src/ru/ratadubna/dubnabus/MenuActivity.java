@@ -1,6 +1,8 @@
 package ru.ratadubna.dubnabus;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -22,4 +24,14 @@ public class MenuActivity extends SherlockFragmentActivity {
 					.add(android.R.id.content, menu, MENU).commit();
 		}
 	}
+	
+	public void onChooseClick(View v) {
+		startActivity(new Intent(this, DubnaBusActivity.class));
+		Bus.clearList();
+	}
+	
+	public void onCancelClick(View v) {
+		finish();
+	}
+	
 }

@@ -48,9 +48,8 @@
         <activity android:name="MenuActivity" >
         </activity>
 
-        <receiver android:name="BusLocationReceiver" >
-        </receiver>
-        <service android:name="BusLocationService"></service>
+        <service android:name="BusLocationService" >
+        </service>
     </application>
 
 </manifest>

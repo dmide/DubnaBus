@@ -5,6 +5,8 @@
     <string name="menu_settings">Выбрать маршруты</string>
     <string name="title_activity_dubna_bus">DubnaBus</string>
     <string name="loading_routes">Пожалуйста, подождите, загружаю маршруты..</string>
-    <string name="submit_routes">Выбрать маршруты</string>
+    <string name="submit_routes">Выбрать</string>
+    <string name="cancel_routes_selection">Отмена</string>
+    
 
 </resources>

@@ -1079,24 +1079,25 @@ containing a value of this type.
         public static final int abs__titleDivider=0x7f04001f;
         public static final int abs__up=0x7f04000e;
         public static final int but=0x7f040038;
-        public static final int checkView=0x7f040039;
+        public static final int cancel=0x7f040039;
+        public static final int checkView=0x7f04003a;
         public static final int disableHome=0x7f04000c;
         public static final int edit_query=0x7f04002a;
         public static final int homeAsUp=0x7f040009;
         public static final int listMode=0x7f040005;
         public static final int listView=0x7f040037;
         public static final int map=0x7f040036;
-        public static final int menu_settings=0x7f04003c;
+        public static final int menu_settings=0x7f04003d;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
         public static final int satellite=0x7f040002;
         public static final int showCustom=0x7f04000b;
         public static final int showHome=0x7f040008;
         public static final int showTitle=0x7f04000a;
-        public static final int snippet=0x7f04003b;
+        public static final int snippet=0x7f04003c;
         public static final int tabMode=0x7f040006;
         public static final int terrain=0x7f040003;
-        public static final int title=0x7f04003a;
+        public static final int title=0x7f04003b;
         public static final int useLogo=0x7f040007;
         public static final int wrap_content=0x7f040004;
     }
@@ -1184,6 +1185,7 @@ containing a value of this type.
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f050014;
         public static final int app_name=0x7f05001a;
+        public static final int cancel_routes_selection=0x7f050020;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=30] 

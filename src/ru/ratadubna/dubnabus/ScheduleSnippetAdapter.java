@@ -25,7 +25,7 @@ class ScheduleSnippetAdapter implements InfoWindowAdapter {
 		View infoWindow = inflater.inflate(R.layout.schedulesnippet, null);
 
 		TextView tv = (TextView) infoWindow.findViewById(R.id.title);
-		tv.setText(marker.getTitle());
+		tv.setText(marker.getTitle());		
 		tv = (TextView) infoWindow.findViewById(R.id.snippet);
 		String snippetText;
 		if ((snippetText = marker.getSnippet()) != null)

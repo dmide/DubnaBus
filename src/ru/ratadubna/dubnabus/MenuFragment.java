@@ -3,7 +3,6 @@ package ru.ratadubna.dubnabus;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,17 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class MenuFragment extends SherlockFragment implements
-		android.widget.AdapterView.OnItemClickListener,
-		android.widget.AdapterView.OnClickListener {
+		android.widget.AdapterView.OnItemClickListener{
 	private ListView lv;
-	private Button but;
 	private SparseBooleanArray positionHide = new SparseBooleanArray();
 	private SharedPreferences prefs = null;
 
@@ -41,8 +37,6 @@ public class MenuFragment extends SherlockFragment implements
 				android.R.layout.simple_list_item_multiple_choice, BusRoutes
 						.GetRoutes()));
 		lv.setOnItemClickListener(this);
-		but = (Button) result.findViewById(R.id.but);
-		but.setOnClickListener(this);
 		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		return (result);
 	}
@@ -53,10 +47,6 @@ public class MenuFragment extends SherlockFragment implements
 		CheckedTextView tv = (CheckedTextView) v.findViewById(R.id.checkView);
 		positionHide.put(position, !tv.isChecked());
 		tv.setChecked(!tv.isChecked());
-	}
-
-	public void onClick(View v) {
-		startActivity(new Intent(getActivity(), DubnaBusActivity.class));
 	}
 
 	public void onPause() {
