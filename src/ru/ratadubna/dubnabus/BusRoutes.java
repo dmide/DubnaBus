@@ -4,26 +4,32 @@ import java.util.ArrayList;
 
 public class BusRoutes {
 	private String desc;
-	private int num;
+	private int routeServiceId;
+	private int routeRealId;
 	private static ArrayList<BusRoutes> routes = new ArrayList<BusRoutes>();
-	
-	public static ArrayList<BusRoutes> GetRoutes(){
+
+	public static ArrayList<BusRoutes> GetRoutes() {
 		return routes;
 	}
-	
-	public static void Add(int num, String desc){
+
+	public static void add(int routeServiceId, String desc, int routeRealId) {
 		BusRoutes route = new BusRoutes();
-		route.num = num;
+		route.routeServiceId = routeServiceId;
 		route.desc = desc;
+		route.routeRealId = routeRealId;
 		routes.add(route);
 	}
-	
-	public String GetDesc(){
+
+	public String getDesc() {
 		return desc;
 	}
-	
-	public int GetId(){
-		return num;
+
+	public int getRouteServiceId() {
+		return routeServiceId;
 	}
 	
+	public int getRouteRealId() {
+		return routeRealId;
+	}
+
 }

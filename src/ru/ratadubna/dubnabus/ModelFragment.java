@@ -5,8 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +39,8 @@ public class ModelFragment extends SherlockFragment {
 	private static final String SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
-	private HashMap<String, Integer> descArray = new HashMap<String, Integer>();
+	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
+	private String lastBusSchedule;
 
 	void loadMapRoutes() {
 		GetRouteMapTask getRouteMapTask;
@@ -42,9 +49,51 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	void loadSchedule(Marker marker) {
-		int id = descArray.get(marker.getTitle());
+		int id = descStopIdMap.get(marker.getTitle());
 		GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
 		executeAsyncTask(getScheduleTask, getActivity().getApplicationContext());
+	}
+
+	Date getTimeDelay(int targetDelay, Integer route) throws ParseException {
+		Pattern pattern = Pattern.compile("№" + route.toString()
+				+ "[<&](.+?)<br"), pattern2;
+		Matcher matcher = pattern.matcher(lastBusSchedule), matcher2;
+		// resultTime variable is here because server returns arrival times in
+		// wrong order after 00:00
+		if (matcher.find()) {
+			Date newTime, resultTime = new Date(
+					Bus.getTime().getTime() + 3600000), targetTime = new Date(
+							Bus.getTime().getTime() + targetDelay * 60000);
+			pattern2 = Pattern.compile("(\\d+:\\d+)");
+			matcher2 = pattern2.matcher(matcher.group());
+			SimpleDateFormat format = new SimpleDateFormat("HH:mm",
+					Locale.getDefault());
+			while (matcher2.find()) {
+				newTime = format.parse(matcher2.group(1));
+				if (targetTime.before(newTime) && resultTime.after(newTime))
+					resultTime = newTime;
+			}
+			return new Date(resultTime.getTime() - targetTime.getTime());
+		}
+		return null;
+	}
+
+	Entry<Date, Integer> observeBusStop(int targetDelay) {
+		TreeMap<Date, Integer> delays = new TreeMap<Date, Integer>();
+		Date timeDelay;
+		int routeRealId;
+		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
+			if (prefs.getBoolean(i.toString(), false)) {
+				try {
+					routeRealId = BusRoutes.GetRoutes().get(i).getRouteRealId();
+					if ((timeDelay = getTimeDelay(targetDelay, routeRealId)) != null)
+						delays.put(timeDelay,routeRealId);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return delays.firstEntry();
 	}
 
 	@Override
@@ -129,15 +178,20 @@ public class ModelFragment extends SherlockFragment {
 
 	private void ParseRoutes(String page) {
 		Pattern pattern = Pattern.compile("<li(.*)</li>"), pattern2 = Pattern
-				.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name");
+				.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name"), pattern3 = Pattern
+				.compile("№(\\d+)");
 		Matcher matcher = pattern.matcher(page);
 		Matcher matcher2;
 		int id;
+		String text;
 		while (matcher.find()) {
 			matcher2 = pattern2.matcher(matcher.group());
 			if (matcher2.find()) {
 				id = Integer.parseInt(matcher2.group(1));
-				BusRoutes.Add(id, matcher2.group(2));
+				text = matcher2.group(2);
+				matcher2 = pattern3.matcher(text);
+				matcher2.find();
+				BusRoutes.add(id, text, Integer.parseInt(matcher2.group(1)));
 			} else
 				return;
 		}
@@ -155,7 +209,8 @@ public class ModelFragment extends SherlockFragment {
 					if (prefs.getBoolean(i.toString(), false)) {
 						int id = prefs.getInt("id_at_" + i.toString(), 0);
 						String page = loadPage(
-								new URL(MAP_ROUTES_URL + String.valueOf(id))).replaceAll(",", ".");
+								new URL(MAP_ROUTES_URL + String.valueOf(id)))
+								.replaceAll(",", ".");
 						pages.add(page);
 						ids.add(id);
 						if (!page.contains("56."))
@@ -173,8 +228,8 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				for (int i = 0; i < pages.size(); i++) {
-					parseMapMarkers(pages.get(i));
-					parseMapRoute(pages.get(i), ids.get(i));
+					parseMapMarkers(pages.get(i), ids.get(i));
+					parseMapRoute(pages.get(i));
 				}
 				mapRoutesLoaded = true;
 				if (!ids.isEmpty()) {
@@ -188,7 +243,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private void parseMapRoute(String page, int id) {
+	private void parseMapRoute(String page) {
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
@@ -201,10 +256,10 @@ public class ModelFragment extends SherlockFragment {
 				return;
 			mapRoute.add(new LatLng(lat, lng));
 		}
-		((DubnaBusActivity) getActivity()).addRoute(mapRoute, id);
+		((DubnaBusActivity) getActivity()).addRoute(mapRoute);
 	}
 
-	private void parseMapMarkers(String page) {
+	private void parseMapMarkers(String page, int routeId) {
 		Pattern pattern = Pattern.compile("(.+\\s\\w+\\s)");
 		Pattern pattern2 = Pattern
 				.compile("([0-9]{2}.[0-9]+)\\s+([0-9]{2}.[0-9]+)\\s+(.+)\\s+([0-9]+)");
@@ -222,11 +277,11 @@ public class ModelFragment extends SherlockFragment {
 				id = Integer.parseInt(matcher2.group(4));
 			} else
 				return;
-			if (!descArray.containsValue(id)) {
+			if (!descStopIdMap.containsValue(id)) {
 				((DubnaBusActivity) getActivity())
 						.addMarker(new MarkerOptions().position(
 								new LatLng(lat, lng)).title(desc));
-				descArray.put(desc, id);
+				descStopIdMap.put(desc, id);
 			}
 		}
 	}
@@ -245,8 +300,7 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		protected Void doInBackground(Context... ctxt) {
 			try {
-				page = loadPage(
-						new URL(SCHEDULE_URL + String.valueOf(id)))
+				page = loadPage(new URL(SCHEDULE_URL + String.valueOf(id)))
 						.replaceAll(",", ".");
 				if (!page.contains("<li"))
 					throw new Exception("Connection problem");
@@ -260,8 +314,9 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
-				((DubnaBusActivity) getActivity()).addSchedule(
-						parseSchedule(page), marker);
+				lastBusSchedule = parseSchedule(page);
+				((DubnaBusActivity) getActivity()).addSchedule(lastBusSchedule,
+						marker);
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",
 						e);
@@ -278,18 +333,24 @@ public class ModelFragment extends SherlockFragment {
 		String tmp;
 		while (matcher.find()) {
 			matcher2 = pattern2.matcher(matcher.group());
-			matcher2.find();
-			if ((tmp = matcher2.group()).length() == 3)
-				tmp += "&nbsp;&nbsp;";
-			result.append("<b>" + tmp + "</b> -");
-			matcher2.find();
-			result.append("<font  color=\"green\">" + matcher2.group()
-					+ "</font>");
-			while (matcher2.find()) {
-				result.append(" " + matcher2.group());
+			if (matcher2.find()) {
+				if ((tmp = matcher2.group()).length() == 3)
+					tmp += "&nbsp;&nbsp;";
+				result.append("<b>" + tmp + "</b> -");
+				if (matcher2.find()) {
+					result.append("<font  color=\"green\">" + matcher2.group()
+							+ "</font>");
+					while (matcher2.find()) {
+						result.append(" " + matcher2.group());
+					}
+					result.append("<br />");
+				}
 			}
-			result.append("<br />");
 		}
-		return result.toString();
+		String strResult = result.toString();
+		if (strResult.equals("<b>№</b> -"))
+			return "";
+		else
+			return strResult;
 	}
 }

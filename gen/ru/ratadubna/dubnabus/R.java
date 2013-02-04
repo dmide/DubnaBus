@@ -1078,27 +1078,28 @@ containing a value of this type.
         public static final int abs__title=0x7f04001e;
         public static final int abs__titleDivider=0x7f04001f;
         public static final int abs__up=0x7f04000e;
-        public static final int but=0x7f040038;
-        public static final int cancel=0x7f040039;
-        public static final int checkView=0x7f04003a;
+        public static final int but=0x7f040039;
+        public static final int cancel=0x7f04003a;
+        public static final int checkView=0x7f04003b;
         public static final int disableHome=0x7f04000c;
         public static final int edit_query=0x7f04002a;
         public static final int homeAsUp=0x7f040009;
         public static final int listMode=0x7f040005;
-        public static final int listView=0x7f040037;
-        public static final int map=0x7f040036;
-        public static final int menu_settings=0x7f04003d;
+        public static final int listView=0x7f040038;
+        public static final int map=0x7f040037;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
+        public static final int route_selection=0x7f04003e;
         public static final int satellite=0x7f040002;
         public static final int showCustom=0x7f04000b;
         public static final int showHome=0x7f040008;
         public static final int showTitle=0x7f04000a;
-        public static final int snippet=0x7f04003c;
+        public static final int snippet=0x7f04003d;
         public static final int tabMode=0x7f040006;
         public static final int terrain=0x7f040003;
-        public static final int title=0x7f04003b;
+        public static final int title=0x7f04003c;
         public static final int useLogo=0x7f040007;
+        public static final int value=0x7f040036;
         public static final int wrap_content=0x7f040004;
     }
     public static final class integer {
@@ -1128,12 +1129,13 @@ containing a value of this type.
         public static final int abs__search_dropdown_item_icons_2line=0x7f030014;
         public static final int abs__search_view=0x7f030015;
         public static final int abs__simple_dropdown_hint=0x7f030016;
-        public static final int main=0x7f030017;
-        public static final int menu=0x7f030018;
-        public static final int row=0x7f030019;
-        public static final int schedulesnippet=0x7f03001a;
-        public static final int sherlock_spinner_dropdown_item=0x7f03001b;
-        public static final int sherlock_spinner_item=0x7f03001c;
+        public static final int dialog=0x7f030017;
+        public static final int main=0x7f030018;
+        public static final int menu=0x7f030019;
+        public static final int row=0x7f03001a;
+        public static final int schedulesnippet=0x7f03001b;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001c;
+        public static final int sherlock_spinner_item=0x7f03001d;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -1229,9 +1231,17 @@ containing a value of this type.
         Google Play services (from Play Store) [CHAR LIMIT=40] 
          */
         public static final int common_google_play_services_update_title=0x7f050007;
+        public static final int dlg_no=0x7f050028;
+        public static final int dlg_note1=0x7f050025;
+        public static final int dlg_note2=0x7f050026;
+        public static final int dlg_text1=0x7f050022;
+        public static final int dlg_text2=0x7f050023;
+        public static final int dlg_text3=0x7f050024;
+        public static final int dlg_title=0x7f050021;
+        public static final int dlg_yes=0x7f050027;
         public static final int hello_world=0x7f05001b;
         public static final int loading_routes=0x7f05001e;
-        public static final int menu_settings=0x7f05001c;
+        public static final int route_selection=0x7f05001c;
         public static final int submit_routes=0x7f05001f;
         public static final int title_activity_dubna_bus=0x7f05001d;
     }

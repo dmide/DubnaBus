@@ -1,6 +1,8 @@
 package ru.ratadubna.dubnabus;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,11 +16,11 @@ import com.commonsware.cwac.wakeful.WakefulIntentService;
 public class BusLocationReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context ctxt, Intent i) {
-		if (i.getAction() == BusLocationService.ACTION_BUS_LOCATION) {
+		if (i.getAction().equals(BusLocationService.ACTION_BUS_LOCATION)) {
 			Intent locServiceIntent = new Intent(ctxt, BusLocationService.class);
 			locServiceIntent.putExtra("ids", i.getIntegerArrayListExtra("ids"));
 			WakefulIntentService.sendWakefulWork(ctxt, locServiceIntent);
-		} else if (i.getAction() == BusLocationService.ACTION_BUS_LOADED) {
+		} else if (i.getAction().equals(BusLocationService.ACTION_BUS_LOADED)) {
 			((DubnaBusActivity)ctxt).addBuses();
 		}
 	}
@@ -28,9 +30,9 @@ public class BusLocationReceiver extends BroadcastReceiver {
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent i = new Intent(BusLocationService.ACTION_BUS_LOCATION);
 		i.putExtra("ids", ids);
-		PendingIntent pi = PendingIntent.getBroadcast(ctxt, 0, i,
+		PendingIntent pi = PendingIntent.getBroadcast(ctxt, 1337, i,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-		mgr.setRepeating(AlarmManager.RTC_WAKEUP,
-				SystemClock.elapsedRealtime(), 5000, pi);
+		mgr.setRepeating(AlarmManager.RTC,
+				System.currentTimeMillis(), 13000, pi);
 	}
 }

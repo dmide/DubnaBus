@@ -2,11 +2,18 @@
 
     <string name="app_name">DubnaBus</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Выбрать маршруты</string>
+    <string name="route_selection">Маршруты</string>
     <string name="title_activity_dubna_bus">DubnaBus</string>
     <string name="loading_routes">Пожалуйста, подождите, загружаю маршруты..</string>
     <string name="submit_routes">Выбрать</string>
     <string name="cancel_routes_selection">Отмена</string>
-    
+    <string name="dlg_title">Оповещение</string>
+    <string name="dlg_text1">Оповестить за</string>
+    <string name="dlg_text2">минут*</string>
+    <string name="dlg_text3">до прихода автобуса**?</string>
+    <string name="dlg_note1">*Учитываются только выбранные в данный момент маршруты</string>
+    <string name="dlg_note2">**Согласно расписанию</string>
+    <string name="dlg_yes">Да</string>
+    <string name="dlg_no">Нет</string>
 
 </resources>

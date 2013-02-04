@@ -1,20 +1,27 @@
 package ru.ratadubna.dubnabus;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 
+import android.graphics.Point;
+
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.VisibleRegion;
 
 public class Bus {
 	private String id;
 	private int speed;
 	private int type;
 	private int route;
+	private static Date time;
 	private static ArrayList<Bus> busList = new ArrayList<Bus>();
 	private static HashSet<String> activeBuses = new HashSet<String>();
 	private BitmapDescriptor image = BitmapDescriptorFactory
@@ -28,7 +35,7 @@ public class Bus {
 		this.type = type;
 		this.route = route;
 		options = new GroundOverlayOptions().image(image)
-				.position(position, 412).bearing(bearing).zIndex(100);
+				.position(position, 400).bearing(bearing).zIndex(100);
 	}
 
 	LatLng getPosition() {
@@ -64,6 +71,21 @@ public class Bus {
 	boolean isActive() {
 		return (overlay != null);
 	}
+	
+	static void setTime(String sTime){
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
+		try {
+			time = format.parse(sTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	static Date getTime(){
+		if (time == null)
+			time = new Date();
+		return time;
+	}
 
 	static void addToList(Bus bus) {
 		busList.add(bus);
@@ -85,19 +107,18 @@ public class Bus {
 	static void updateBus(String id, LatLng position, int speed, int bearing) {
 		for (Bus bus : busList) {
 			if (bus.getId().equals(id)) {
-				bus.options.position(position, 412);
+				bus.options.position(position, 400);
 				bus.speed = speed;
 				bus.options.bearing(bearing);
 			}
 		}
 	}
 
-
-	static void redrawOnZoomChange(VisibleRegion region) {
-		double span = region.farRight.longitude - region.farLeft.longitude;
+	static void redrawOnZoomChange(Projection projection) {
+		double span = projection.fromScreenLocation(new Point(100,0)).longitude - projection.fromScreenLocation(new Point(0,0)).longitude;
 		for (Bus bus : busList) {
 			if (bus.isActive()) {
-				float tmp = (float)(7500*span);
+				float tmp = (float)(35000*span);
 				bus.overlay.setDimensions(tmp);
 			}
 		}

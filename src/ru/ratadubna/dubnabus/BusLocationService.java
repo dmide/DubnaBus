@@ -40,6 +40,7 @@ public class BusLocationService extends WakefulIntentService {
 				while ((line = reader.readLine()) != null) {
 					buf.append(line + "\n");
 				}
+				String tmp = buf.toString().replaceAll(",", ".");
 				parseBusLocs(buf.toString().replaceAll(",", "."), id);
 			}
 			intent = new Intent(ACTION_BUS_LOADED);
@@ -62,7 +63,7 @@ public class BusLocationService extends WakefulIntentService {
 
 	private void parseBusLocs(String page, int id) {
 		String[] strings = page.split("\n");
-		// String time;
+		String time = "";
 		for (String str : strings) {
 			String[] contents = str.split("\\s");
 			if (contents.length == 8) {
@@ -81,12 +82,13 @@ public class BusLocationService extends WakefulIntentService {
 							.parseInt(contents[7]), Integer
 							.parseInt(contents[0]), id));
 				}
-			}
+			} else
+				return;
 		}
-		/*
-		 * int tmp = page.indexOf(":"); if (tmp > 0) { time = page.substring(tmp
-		 * - 2, tmp + 3); }
-		 */
-
+		int tmp = page.indexOf(":");
+		if (tmp > 0) {
+			time = page.substring(tmp - 2, tmp + 3);
+		}
+		Bus.setTime(time);
 	}
 }

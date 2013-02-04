@@ -56,7 +56,7 @@ public class MenuFragment extends SherlockFragment implements
 		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
 			editor.putBoolean(i.toString(), positionHide.get(i, false));
 			editor.putInt("id_at_" + i.toString(), BusRoutes.GetRoutes().get(i)
-					.GetId());
+					.getRouteServiceId());
 		}
 		editor.putInt(ModelFragment.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
@@ -94,7 +94,7 @@ public class MenuFragment extends SherlockFragment implements
 				CheckedTextView itemView = (CheckedTextView) view
 						.findViewById(R.id.checkView);
 				if (itemView != null) {
-					itemView.setText(item.GetDesc());
+					itemView.setText(item.getDesc());
 					Boolean chk = positionHide.get(position);
 					if (chk != null)
 						itemView.setChecked(chk);

@@ -1,6 +1,9 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/route_selection"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="@string/menu_settings"
-        android:showAsAction="ifRoom|withText" />
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/route_selection"/>
+
 </menu>
