@@ -1036,8 +1036,10 @@ containing a value of this type.
         public static final int abs__textfield_searchview_right_holo_light=0x7f02006e;
         public static final int bustop=0x7f02006f;
         public static final int bustop_notif=0x7f020070;
-        public static final int ic_action_search=0x7f020071;
-        public static final int ic_launcher=0x7f020072;
+        public static final int bustype59=0x7f020071;
+        public static final int bustype91=0x7f020072;
+        public static final int ic_action_search=0x7f020073;
+        public static final int ic_launcher=0x7f020074;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f040025;

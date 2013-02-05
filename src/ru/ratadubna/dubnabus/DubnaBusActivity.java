@@ -34,6 +34,11 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private boolean noSchedule = false;
 	static final String MODEL = "model";
 	static final String DIALOG = "dialog";
+	private static Context context;
+
+	static Context getCtxt() {
+		return context;
+	}
 
 	@Override
 	public void onResume() {
@@ -60,6 +65,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		context = getApplicationContext();
 		setTheme(R.style.Theme_Sherlock_Light);
 		if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
 			model = new ModelFragment();
@@ -119,13 +125,17 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		model.processMarker(marker);
+		if (marker.getTitle().matches("(¹\\d{1,3})")) {
+			setBusSnippet(marker);
+		} else {
+			model.processMarker(marker);
+		}
 		return false;
 	}
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
-		if (!noSchedule) {
+		if (!marker.getTitle().matches("(¹\\d{1,3})") && !noSchedule) {
 			if (getSupportFragmentManager().findFragmentByTag(DIALOG) == null) {
 				dialog = new BusStopObserverDialogFragment();
 				getSupportFragmentManager().beginTransaction()
@@ -147,6 +157,14 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		marker.showInfoWindow();
 	}
 
+	void setBusSnippet(Marker marker) {
+		Bus bus = Bus.getBusByMarker(marker);
+		marker.setSnippet("<img src=\"file:///android_res/drawable/"
+				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
+				+ "êì/÷");
+		marker.showInfoWindow();
+	}
+
 	void addRoute(PolylineOptions mapRoute) {
 		mapRoute.color(-(new Random().nextInt(2147483647)));
 		mMap.addPolyline(mapRoute);
@@ -164,7 +182,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			} else {
 				bus.setOverlay(mMap.addGroundOverlay(bus
 						.getGroundOverlayOptions()));
-				bus.setMarker(mMap.addMarker(bus.getMarkerOptions()));
+				Marker marker = mMap.addMarker(bus.getMarkerOptions());
+				marker.setVisible(false);
+				bus.setMarker(marker);
 			}
 		}
 

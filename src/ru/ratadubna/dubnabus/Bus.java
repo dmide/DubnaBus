@@ -27,16 +27,17 @@ public class Bus {
 	private static Date time;
 	private static ArrayList<Bus> busList = new ArrayList<Bus>();
 	private static HashSet<String> activeBuses = new HashSet<String>();
-	private static HashMap<Integer, String> busTypes = new HashMap<Integer, String>();
+	private static final HashMap<Integer, String> busTypes = new HashMap<Integer, String>();
 	private BitmapDescriptor image = BitmapDescriptorFactory
 			.fromAsset("bus180.gif");
 	private GroundOverlayOptions groundOverlayOptions;
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
 	private Marker marker = null;
-	
-	static{
-		
+
+	static {
+		busTypes.put(59, "busType59.png");
+		busTypes.put(91, "busType91.png");
 	}
 
 	Bus(String id, LatLng position, int speed, int bearing, int type, int route) {
@@ -46,8 +47,9 @@ public class Bus {
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
 				.position(position, 400).bearing(bearing).zIndex(100);
-		String title = "¹"+String.valueOf(BusRoutes.GetRoutes().get(route).getRouteRealId());
-		markerOptions = new MarkerOptions().position(position).visible(true).title(title);
+		String title = "¹" + String.valueOf(BusRoutes.realIdByServiceId(route));
+		markerOptions = new MarkerOptions().position(position).title(title)
+				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
 	}
 
 	LatLng getPosition() {
@@ -95,6 +97,14 @@ public class Bus {
 	boolean isActive() {
 		return (overlay != null);
 	}
+	
+	String getPic(){
+		return busTypes.get(type);
+	}
+	
+	int getSpeed(){
+		return speed;
+	}
 
 	static void setTime(String sTime) {
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm",
@@ -123,6 +133,14 @@ public class Bus {
 
 	static ArrayList<Bus> getList() {
 		return busList;
+	}
+	
+	static Bus getBusByMarker(Marker marker){
+		for (Bus bus: busList){
+			if (bus.marker.equals(marker))
+				return bus;
+		}
+		return null;
 	}
 
 	static boolean isActive(String id) {

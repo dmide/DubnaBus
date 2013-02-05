@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -49,12 +50,9 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	void processMarker(Marker marker) {
-		Integer id;
-		if ((id = descStopIdMap.get(marker.getTitle())) != null) {
-			GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
-			executeAsyncTask(getScheduleTask, getActivity()
-					.getApplicationContext());
-		} 
+		Integer id = descStopIdMap.get(marker.getTitle());
+		GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
+		executeAsyncTask(getScheduleTask, getActivity().getApplicationContext());
 	}
 
 	Date getTimeDelay(int targetDelay, Integer route) throws ParseException {
@@ -282,8 +280,11 @@ public class ModelFragment extends SherlockFragment {
 				return;
 			if (!descStopIdMap.containsValue(id)) {
 				((DubnaBusActivity) getActivity())
-						.addMarker(new MarkerOptions().position(
-								new LatLng(lat, lng)).title(desc));
+						.addMarker(new MarkerOptions()
+								.position(new LatLng(lat, lng))
+								.title(desc)
+								.icon(BitmapDescriptorFactory
+										.fromAsset("mdpi_busstop4.png")));
 				descStopIdMap.put(desc, id);
 			}
 		}
@@ -318,8 +319,8 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				lastBusSchedule = parseSchedule(page);
-				((DubnaBusActivity) getActivity()).setBusStopSnippet(lastBusSchedule,
-						marker);
+				((DubnaBusActivity) getActivity()).setBusStopSnippet(
+						lastBusSchedule, marker);
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",
 						e);
