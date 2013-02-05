@@ -60,7 +60,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTheme(R.style.Theme_Sherlock);
+		setTheme(R.style.Theme_Sherlock_Light);
 		if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
 			model = new ModelFragment();
 			getSupportFragmentManager().beginTransaction().add(model, MODEL)
@@ -119,7 +119,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-		model.loadSchedule(marker);
+		model.processMarker(marker);
 		return false;
 	}
 
@@ -141,9 +141,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		return model;
 	}
 
-	void addSchedule(String content, Marker marker) {
-		noSchedule = content.isEmpty();
-		marker.setSnippet(content);
+	void setBusStopSnippet(String schedule, Marker marker) {
+		noSchedule = schedule.isEmpty();
+		marker.setSnippet(schedule);
 		marker.showInfoWindow();
 	}
 
@@ -158,10 +158,14 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
 	void addBuses() {
 		for (Bus bus : Bus.getList()) {
-			if (bus.isActive())
+			if (bus.isActive()) {
 				bus.updateOverlay();
-			else
-				bus.setOverlay(mMap.addGroundOverlay(bus.getOptions()));
+				bus.updateMarker();
+			} else {
+				bus.setOverlay(mMap.addGroundOverlay(bus
+						.getGroundOverlayOptions()));
+				bus.setMarker(mMap.addMarker(bus.getMarkerOptions()));
+			}
 		}
 
 	}

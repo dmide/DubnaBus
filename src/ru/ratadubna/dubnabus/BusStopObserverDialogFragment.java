@@ -22,7 +22,6 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 	private SharedPreferences prefs = null;
 	private View form = null;
 	private EditText et = null;
-	private int delay;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -30,7 +29,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 			prefs = PreferenceManager
 					.getDefaultSharedPreferences(getActivity());
 		}
-		delay = prefs.getInt("notificationDelay", 10);
+		int delay = prefs.getInt("notificationDelay", 10);
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog, null);
 		et = (EditText) form.findViewById(R.id.value);
 		et.setText(String.valueOf(delay));
@@ -42,14 +41,17 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		delay = Integer.parseInt(((EditText) form.findViewById(R.id.value))
+		int delay = Integer.parseInt(((EditText) form.findViewById(R.id.value))
 				.getText().toString());
 		if (delay < 60) {
 			prefs.edit().putInt("notificationDelay", delay).apply();
 			Entry<Date, Integer> actualDelay =  ((DubnaBusActivity)getActivity()).getModel().observeBusStop(delay);
-			Calendar delay = new GregorianCalendar();
-			delay.setTime(actualDelay.getKey());
-			Toast.makeText(getActivity(), "Минут до оповещения: "+ String.valueOf(delay.get(Calendar.MINUTE)) + ". Ожидается автобус №" + actualDelay.getValue().toString(), Toast.LENGTH_LONG).show();
+			Calendar actualDelayCal = new GregorianCalendar();
+			actualDelayCal.setTime(actualDelay.getKey());
+			Toast.makeText(getActivity(), "Минут до оповещения: "+ String.valueOf(actualDelayCal.get(Calendar.MINUTE)) + ". Ожидается автобус №" + actualDelay.getValue().toString(), Toast.LENGTH_LONG).show();
+			//Toast.makeText(getActivity(), "Минут до оповещения: 10. Ожидается автобус №666", Toast.LENGTH_LONG).show();
+			NotificationReceiver.scheduleAlarm(getActivity(), actualDelayCal.get(Calendar.MINUTE)*60000, delay, actualDelay.getValue().toString());
+			//NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10, "666");
 		} else {
 			Toast.makeText(getActivity(), "Время ожидания должно быть меньше 60 минут", Toast.LENGTH_LONG).show();
 		}

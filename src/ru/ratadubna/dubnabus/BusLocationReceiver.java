@@ -1,15 +1,12 @@
 package ru.ratadubna.dubnabus;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 

@@ -50,6 +50,14 @@
 
         <service android:name="BusLocationService" >
         </service>
+
+        <receiver
+            android:name="NotificationReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="ru.ratadubna.dubnabus.action.NOTIFICATION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

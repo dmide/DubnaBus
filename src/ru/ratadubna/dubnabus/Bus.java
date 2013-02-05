@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -15,6 +16,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Bus {
 	private String id;
@@ -24,22 +27,31 @@ public class Bus {
 	private static Date time;
 	private static ArrayList<Bus> busList = new ArrayList<Bus>();
 	private static HashSet<String> activeBuses = new HashSet<String>();
+	private static HashMap<Integer, String> busTypes = new HashMap<Integer, String>();
 	private BitmapDescriptor image = BitmapDescriptorFactory
 			.fromAsset("bus180.gif");
-	private GroundOverlayOptions options;
+	private GroundOverlayOptions groundOverlayOptions;
 	private GroundOverlay overlay = null;
+	private MarkerOptions markerOptions;
+	private Marker marker = null;
+	
+	static{
+		
+	}
 
 	Bus(String id, LatLng position, int speed, int bearing, int type, int route) {
 		this.id = id;
 		this.speed = speed;
 		this.type = type;
 		this.route = route;
-		options = new GroundOverlayOptions().image(image)
+		groundOverlayOptions = new GroundOverlayOptions().image(image)
 				.position(position, 400).bearing(bearing).zIndex(100);
+		String title = "¹"+String.valueOf(BusRoutes.GetRoutes().get(route).getRouteRealId());
+		markerOptions = new MarkerOptions().position(position).visible(true).title(title);
 	}
 
 	LatLng getPosition() {
-		return options.getLocation();
+		return groundOverlayOptions.getLocation();
 	}
 
 	String getId() {
@@ -51,11 +63,15 @@ public class Bus {
 	}
 
 	float getBearing() {
-		return options.getBearing();
+		return groundOverlayOptions.getBearing();
 	}
 
-	GroundOverlayOptions getOptions() {
-		return options;
+	GroundOverlayOptions getGroundOverlayOptions() {
+		return groundOverlayOptions;
+	}
+
+	MarkerOptions getMarkerOptions() {
+		return markerOptions;
 	}
 
 	void setOverlay(GroundOverlay overlay) {
@@ -63,25 +79,34 @@ public class Bus {
 		activeBuses.add(id);
 	}
 
+	void setMarker(Marker marker) {
+		this.marker = marker;
+	}
+
 	void updateOverlay() {
-		overlay.setPosition(options.getLocation());
-		overlay.setBearing(options.getBearing());
+		overlay.setPosition(groundOverlayOptions.getLocation());
+		overlay.setBearing(groundOverlayOptions.getBearing());
+	}
+
+	void updateMarker() {
+		marker.setPosition(groundOverlayOptions.getLocation());
 	}
 
 	boolean isActive() {
 		return (overlay != null);
 	}
-	
-	static void setTime(String sTime){
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+	static void setTime(String sTime) {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm",
+				Locale.getDefault());
 		try {
 			time = format.parse(sTime);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	static Date getTime(){
+
+	static Date getTime() {
 		if (time == null)
 			time = new Date();
 		return time;
@@ -107,18 +132,19 @@ public class Bus {
 	static void updateBus(String id, LatLng position, int speed, int bearing) {
 		for (Bus bus : busList) {
 			if (bus.getId().equals(id)) {
-				bus.options.position(position, 400);
+				bus.groundOverlayOptions.position(position, 400);
 				bus.speed = speed;
-				bus.options.bearing(bearing);
+				bus.groundOverlayOptions.bearing(bearing);
 			}
 		}
 	}
 
 	static void redrawOnZoomChange(Projection projection) {
-		double span = projection.fromScreenLocation(new Point(100,0)).longitude - projection.fromScreenLocation(new Point(0,0)).longitude;
+		double span = projection.fromScreenLocation(new Point(100, 0)).longitude
+				- projection.fromScreenLocation(new Point(0, 0)).longitude;
 		for (Bus bus : busList) {
 			if (bus.isActive()) {
-				float tmp = (float)(35000*span);
+				float tmp = (float) (35000 * span);
 				bus.overlay.setDimensions(tmp);
 			}
 		}

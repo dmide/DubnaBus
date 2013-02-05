@@ -48,10 +48,13 @@ public class ModelFragment extends SherlockFragment {
 		executeAsyncTask(getRouteMapTask, getActivity().getApplicationContext());
 	}
 
-	void loadSchedule(Marker marker) {
-		int id = descStopIdMap.get(marker.getTitle());
-		GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
-		executeAsyncTask(getScheduleTask, getActivity().getApplicationContext());
+	void processMarker(Marker marker) {
+		Integer id;
+		if ((id = descStopIdMap.get(marker.getTitle())) != null) {
+			GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
+			executeAsyncTask(getScheduleTask, getActivity()
+					.getApplicationContext());
+		} 
 	}
 
 	Date getTimeDelay(int targetDelay, Integer route) throws ParseException {
@@ -63,7 +66,7 @@ public class ModelFragment extends SherlockFragment {
 		if (matcher.find()) {
 			Date newTime, resultTime = new Date(
 					Bus.getTime().getTime() + 3600000), targetTime = new Date(
-							Bus.getTime().getTime() + targetDelay * 60000);
+					Bus.getTime().getTime() + targetDelay * 60000);
 			pattern2 = Pattern.compile("(\\d+:\\d+)");
 			matcher2 = pattern2.matcher(matcher.group());
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm",
@@ -87,7 +90,7 @@ public class ModelFragment extends SherlockFragment {
 				try {
 					routeRealId = BusRoutes.GetRoutes().get(i).getRouteRealId();
 					if ((timeDelay = getTimeDelay(targetDelay, routeRealId)) != null)
-						delays.put(timeDelay,routeRealId);
+						delays.put(timeDelay, routeRealId);
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -315,7 +318,7 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				lastBusSchedule = parseSchedule(page);
-				((DubnaBusActivity) getActivity()).addSchedule(lastBusSchedule,
+				((DubnaBusActivity) getActivity()).setBusStopSnippet(lastBusSchedule,
 						marker);
 			} else {
 				Log.e(getClass().getSimpleName(), "Exception loading contents",

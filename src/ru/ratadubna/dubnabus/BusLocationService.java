@@ -40,7 +40,6 @@ public class BusLocationService extends WakefulIntentService {
 				while ((line = reader.readLine()) != null) {
 					buf.append(line + "\n");
 				}
-				String tmp = buf.toString().replaceAll(",", ".");
 				parseBusLocs(buf.toString().replaceAll(",", "."), id);
 			}
 			intent = new Intent(ACTION_BUS_LOADED);
