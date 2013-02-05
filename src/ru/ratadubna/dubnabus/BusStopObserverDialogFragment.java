@@ -35,8 +35,8 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 		et.setText(String.valueOf(delay));
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		return (builder.setTitle(R.string.dlg_title).setView(form)
-				.setPositiveButton(android.R.string.yes, this)
-				.setNegativeButton(android.R.string.no, null).create());
+				.setPositiveButton(R.string.dlg_yes, this)
+				.setNegativeButton(R.string.dlg_no, null).create());
 	}
 
 	@Override
@@ -52,10 +52,10 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 				actualDelayCal.setTime(actualDelay.getKey());
 				Toast.makeText(
 						getActivity(),
-						"Минут до оповещения: "
+						R.string.min_before_alarm
 								+ String.valueOf(actualDelayCal
 										.get(Calendar.MINUTE))
-								+ ". Ожидается автобус №"
+								+ R.string.awaiting_bus
 								+ actualDelay.getValue().toString(),
 						Toast.LENGTH_LONG).show();
 				// Toast.makeText(getActivity(),
@@ -67,13 +67,14 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 				// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
 				// "42");
 			} else {
-				Toast.makeText(getActivity(),
-						"К сожалению, на выбранных маршрутах нет автобусов, удовлетворяющих условиям",
+				Toast.makeText(
+						getActivity(),
+						R.string.no_bus,
 						Toast.LENGTH_LONG).show();
 			}
 		} else {
 			Toast.makeText(getActivity(),
-					"Время ожидания должно быть меньше 60 минут",
+					R.string.waiting_time_limit,
 					Toast.LENGTH_LONG).show();
 		}
 	}

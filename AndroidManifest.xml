@@ -58,6 +58,7 @@
                 <action android:name="ru.ratadubna.dubnabus.action.NOTIFICATION" />
             </intent-filter>
         </receiver>
+        <activity android:name="SimpleContentActivity"></activity>
     </application>
 
 </manifest>

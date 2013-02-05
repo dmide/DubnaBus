@@ -1,7 +1,6 @@
 <resources>
 
     <string name="app_name">DubnaBus</string>
-    <string name="hello_world">Hello world!</string>
     <string name="route_selection">Маршруты</string>
     <string name="title_activity_dubna_bus">DubnaBus</string>
     <string name="loading_routes">Пожалуйста, подождите, загружаю маршруты..</string>
@@ -15,5 +14,18 @@
     <string name="dlg_note2">**Согласно расписанию</string>
     <string name="dlg_yes">Да</string>
     <string name="dlg_no">Нет</string>
+    <string name="kmph">км/ч</string>
+    <string name="min_before_alarm">Минут до оповещения: </string>
+    <string name="awaiting_bus">. Ожидается автобус №</string>
+    <string name="no_bus">К сожалению, на выбранных маршрутах нет автобусов, удовлетворяющих условиям</string>
+    <string name="waiting_time_limit">Время ожидания должно быть меньше 60 минут</string>
+    <string name="bus_number">Автобус №</string>
+    <string name="min"> мин.</string>
+    <string name="arrives_in">Прибудет через </string>
+    <string name="bus_notification">Автобус</string>
+    <string name="trainsDM">Поезда Дубна-Москва</string>
+    <string name="trainsMD">Поезда Москва-Дубна</string>
+    <string name="busesDM">Автобусы Дубна-Москва</string>
+    <string name="busesMD">Автобусы Москва-Дубна</string>
 
 </resources>

@@ -4,12 +4,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 
 import android.graphics.Point;
 import android.location.Location;
+import android.util.Log;
+import android.util.SparseArray;
 
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -28,7 +29,7 @@ public class Bus {
 	private static Date time;
 	private static ArrayList<Bus> busList = new ArrayList<Bus>();
 	private static HashSet<String> activeBuses = new HashSet<String>();
-	private static final HashMap<Integer, String> busTypes = new HashMap<Integer, String>();
+	private static final SparseArray<String> busTypes = new SparseArray<String>();
 	private BitmapDescriptor image = BitmapDescriptorFactory
 			.fromAsset("bus_arrow.png");
 	private GroundOverlayOptions groundOverlayOptions;
@@ -113,7 +114,7 @@ public class Bus {
 		try {
 			time = format.parse(sTime);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			Log.e("Bus class", "Exception parsing time from string", e);
 		}
 	}
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.KeyEvent;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
@@ -35,6 +34,10 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	static final String MODEL = "model";
 	static final String DIALOG = "dialog";
 	private static Context context;
+	private final String trainsDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=suburban&fromId=c215";
+	private final String trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban";
+	private final String busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215";
+	private final String busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus";
 
 	static Context getCtxt() {
 		return context;
@@ -91,21 +94,36 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			Intent i = new Intent(this, MenuActivity.class);
 			startActivity(i);
 			return (true);
+		case R.id.trainsDM:
+			i = new Intent(this, SimpleContentActivity.class);
+			i.putExtra(SimpleContentActivity.EXTRA_DATA, trainsDMurl);
+			startActivity(i);
+			return (true);
+		case R.id.trainsMD:
+			i = new Intent(this, SimpleContentActivity.class);
+			i.putExtra(SimpleContentActivity.EXTRA_DATA, trainsMDurl);
+			startActivity(i);
+			return (true);
+		case R.id.busesDM:
+			i = new Intent(this, SimpleContentActivity.class);
+			i.putExtra(SimpleContentActivity.EXTRA_DATA, busesDMurl);
+			startActivity(i);
+			return (true);
+		case R.id.busesMD:
+			i = new Intent(this, SimpleContentActivity.class);
+			i.putExtra(SimpleContentActivity.EXTRA_DATA, busesMDurl);
+			startActivity(i);
+			return (true);
 		}
 		return (super.onOptionsItemSelected(item));
 	}
 
-	@Override
-	public boolean onKeyDown(int keycode, KeyEvent e) {
-		switch (keycode) {
-		case KeyEvent.KEYCODE_MENU:
-			Intent i = new Intent(this, MenuActivity.class);
-			startActivity(i);
-			return (true);
-		}
-		return super.onKeyDown(keycode, e);
-	}
-
+	/*
+	 * @Override public boolean onKeyDown(int keycode, KeyEvent e) { switch
+	 * (keycode) { case KeyEvent.KEYCODE_MENU: Intent i = new Intent(this,
+	 * MenuActivity.class); startActivity(i); return (true); } return
+	 * super.onKeyDown(keycode, e); }
+	 */
 	private void setUpMapIfNeeded() {
 		if (mMap == null) {
 			SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager()
@@ -161,7 +179,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		Bus bus = Bus.getBusByMarker(marker);
 		marker.setSnippet("<img src=\"file:///android_res/drawable/"
 				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
-				+ "км/ч");
+				+ R.string.kmph);
 		marker.showInfoWindow();
 	}
 

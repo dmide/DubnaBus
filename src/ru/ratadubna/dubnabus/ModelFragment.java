@@ -90,7 +90,8 @@ public class ModelFragment extends SherlockFragment {
 					if ((timeDelay = getTimeDelay(targetDelay, routeRealId)) != null)
 						delays.put(timeDelay, routeRealId);
 				} catch (ParseException e) {
-					e.printStackTrace();
+					Log.e(getClass().getSimpleName(),
+							"Exception parsing time from string", e);
 				}
 			}
 		}
@@ -220,7 +221,7 @@ public class ModelFragment extends SherlockFragment {
 				}
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
-						"Exception retrieving bus routes content", e);
+						"Exception retrieving bus maproutes content", e);
 			}
 			return (null);
 		}

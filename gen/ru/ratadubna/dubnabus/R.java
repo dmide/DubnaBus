@@ -1034,14 +1034,11 @@ containing a value of this type.
         public static final int abs__textfield_searchview_holo_light=0x7f02006c;
         public static final int abs__textfield_searchview_right_holo_dark=0x7f02006d;
         public static final int abs__textfield_searchview_right_holo_light=0x7f02006e;
-        public static final int bustop=0x7f02006f;
-        public static final int bustop_notif=0x7f020070;
-        public static final int bustype59=0x7f020071;
-        public static final int bustype91=0x7f020072;
-        public static final int desktop=0x7f020073;
-        public static final int ic_action_search=0x7f020074;
-        public static final int ic_launcher=0x7f020075;
-        public static final int ic_stat_example=0x7f020076;
+        public static final int bustype59=0x7f02006f;
+        public static final int bustype91=0x7f020070;
+        public static final int ic_action_search=0x7f020071;
+        public static final int ic_launcher=0x7f020072;
+        public static final int ic_stat_example=0x7f020073;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f040025;
@@ -1084,6 +1081,8 @@ containing a value of this type.
         public static final int abs__title=0x7f04001e;
         public static final int abs__titleDivider=0x7f04001f;
         public static final int abs__up=0x7f04000e;
+        public static final int busesDM=0x7f040041;
+        public static final int busesMD=0x7f040042;
         public static final int but=0x7f040039;
         public static final int cancel=0x7f04003a;
         public static final int checkView=0x7f04003b;
@@ -1104,6 +1103,8 @@ containing a value of this type.
         public static final int tabMode=0x7f040006;
         public static final int terrain=0x7f040003;
         public static final int title=0x7f04003c;
+        public static final int trainsDM=0x7f04003f;
+        public static final int trainsMD=0x7f040040;
         public static final int useLogo=0x7f040007;
         public static final int value=0x7f040036;
         public static final int wrap_content=0x7f040004;
@@ -1193,7 +1194,13 @@ containing a value of this type.
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f050014;
         public static final int app_name=0x7f05001a;
-        public static final int cancel_routes_selection=0x7f050020;
+        public static final int arrives_in=0x7f05002f;
+        public static final int awaiting_bus=0x7f05002a;
+        public static final int bus_notification=0x7f050030;
+        public static final int bus_number=0x7f05002d;
+        public static final int busesDM=0x7f050033;
+        public static final int busesMD=0x7f050034;
+        public static final int cancel_routes_selection=0x7f05001f;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=30] 
@@ -1237,19 +1244,25 @@ containing a value of this type.
         Google Play services (from Play Store) [CHAR LIMIT=40] 
          */
         public static final int common_google_play_services_update_title=0x7f050007;
-        public static final int dlg_no=0x7f050028;
-        public static final int dlg_note1=0x7f050025;
-        public static final int dlg_note2=0x7f050026;
-        public static final int dlg_text1=0x7f050022;
-        public static final int dlg_text2=0x7f050023;
-        public static final int dlg_text3=0x7f050024;
-        public static final int dlg_title=0x7f050021;
-        public static final int dlg_yes=0x7f050027;
-        public static final int hello_world=0x7f05001b;
-        public static final int loading_routes=0x7f05001e;
-        public static final int route_selection=0x7f05001c;
-        public static final int submit_routes=0x7f05001f;
-        public static final int title_activity_dubna_bus=0x7f05001d;
+        public static final int dlg_no=0x7f050027;
+        public static final int dlg_note1=0x7f050024;
+        public static final int dlg_note2=0x7f050025;
+        public static final int dlg_text1=0x7f050021;
+        public static final int dlg_text2=0x7f050022;
+        public static final int dlg_text3=0x7f050023;
+        public static final int dlg_title=0x7f050020;
+        public static final int dlg_yes=0x7f050026;
+        public static final int kmph=0x7f050028;
+        public static final int loading_routes=0x7f05001d;
+        public static final int min=0x7f05002e;
+        public static final int min_before_alarm=0x7f050029;
+        public static final int no_bus=0x7f05002b;
+        public static final int route_selection=0x7f05001b;
+        public static final int submit_routes=0x7f05001e;
+        public static final int title_activity_dubna_bus=0x7f05001c;
+        public static final int trainsDM=0x7f050031;
+        public static final int trainsMD=0x7f050032;
+        public static final int waiting_time_limit=0x7f05002c;
     }
     public static final class style {
         public static final int AppTheme=0x7f0a0059;

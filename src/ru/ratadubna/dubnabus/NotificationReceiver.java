@@ -22,13 +22,13 @@ public class NotificationReceiver extends BroadcastReceiver {
 			builder.setAutoCancel(true)
 					.setContentIntent(pi)
 					.setContentTitle(
-							"Автобус №" + i.getStringExtra("bus_number"))
+							R.string.bus_number + i.getStringExtra("bus_number"))
 					.setContentText(
-							"Прибудет через "
+							R.string.arrives_in
 									+ String.valueOf(i.getIntExtra("delay", 0))
-									+ " мин.")
+									+ R.string.min)
 					.setSmallIcon(R.drawable.ic_stat_example)
-					.setTicker("Автобус").setWhen(System.currentTimeMillis());
+					.setTicker(R.string.bus_notification+"").setWhen(System.currentTimeMillis()); // +"" here to calm down eclipse with its type warning
 			NotificationManager mgr = ((NotificationManager) ctxt
 					.getSystemService(Context.NOTIFICATION_SERVICE));
 			mgr.notify(NOTIFY_ID, builder.getNotification());
