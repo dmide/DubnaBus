@@ -27,7 +27,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 							"Прибудет через "
 									+ String.valueOf(i.getIntExtra("delay", 0))
 									+ " мин.")
-					.setSmallIcon(R.drawable.bustop_notif)
+					.setSmallIcon(R.drawable.ic_stat_example)
 					.setTicker("Автобус").setWhen(System.currentTimeMillis());
 			NotificationManager mgr = ((NotificationManager) ctxt
 					.getSystemService(Context.NOTIFICATION_SERVICE));

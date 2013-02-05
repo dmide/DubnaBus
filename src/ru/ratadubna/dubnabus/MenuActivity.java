@@ -29,6 +29,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 	public void onChooseClick(View v) {
 		startActivity(new Intent(this, DubnaBusActivity.class));
 		Bus.clearList();
+		BusLocationReceiver.loadingPermission = false;
 	}
 	
 	public void onCancelClick(View v) {

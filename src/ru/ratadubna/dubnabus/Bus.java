@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import android.graphics.Point;
+import android.location.Location;
 
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -29,7 +30,7 @@ public class Bus {
 	private static HashSet<String> activeBuses = new HashSet<String>();
 	private static final HashMap<Integer, String> busTypes = new HashMap<Integer, String>();
 	private BitmapDescriptor image = BitmapDescriptorFactory
-			.fromAsset("bus180.gif");
+			.fromAsset("bus_arrow.png");
 	private GroundOverlayOptions groundOverlayOptions;
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
@@ -46,7 +47,7 @@ public class Bus {
 		this.type = type;
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
-				.position(position, 400).bearing(bearing).zIndex(100);
+				.position(position, 196).bearing(bearing).zIndex(100);
 		String title = "¹" + String.valueOf(BusRoutes.realIdByServiceId(route));
 		markerOptions = new MarkerOptions().position(position).title(title)
 				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
@@ -97,12 +98,12 @@ public class Bus {
 	boolean isActive() {
 		return (overlay != null);
 	}
-	
-	String getPic(){
+
+	String getPic() {
 		return busTypes.get(type);
 	}
-	
-	int getSpeed(){
+
+	int getSpeed() {
 		return speed;
 	}
 
@@ -134,9 +135,9 @@ public class Bus {
 	static ArrayList<Bus> getList() {
 		return busList;
 	}
-	
-	static Bus getBusByMarker(Marker marker){
-		for (Bus bus: busList){
+
+	static Bus getBusByMarker(Marker marker) {
+		for (Bus bus : busList) {
 			if (bus.marker.equals(marker))
 				return bus;
 		}
@@ -150,7 +151,7 @@ public class Bus {
 	static void updateBus(String id, LatLng position, int speed, int bearing) {
 		for (Bus bus : busList) {
 			if (bus.getId().equals(id)) {
-				bus.groundOverlayOptions.position(position, 400);
+				bus.groundOverlayOptions.position(position, 196);
 				bus.speed = speed;
 				bus.groundOverlayOptions.bearing(bearing);
 			}
@@ -158,14 +159,17 @@ public class Bus {
 	}
 
 	static void redrawOnZoomChange(Projection projection) {
-		double span = projection.fromScreenLocation(new Point(100, 0)).longitude
-				- projection.fromScreenLocation(new Point(0, 0)).longitude;
+		// 28 pix approximately corresponds 196 meters at default zoom.
+		// 196 meters, in turn, is just value at which bus-arrow looks fine
+		LatLng ll1 = projection.fromScreenLocation(new Point(28, 0)), ll2 = projection
+				.fromScreenLocation(new Point(0, 0));
+		float[] results = new float[3];
+		Location.distanceBetween(ll1.latitude, ll1.longitude, ll2.latitude,
+				ll2.longitude, results);
 		for (Bus bus : busList) {
 			if (bus.isActive()) {
-				float tmp = (float) (35000 * span);
-				bus.overlay.setDimensions(tmp);
+				bus.overlay.setDimensions(results[0]);
 			}
 		}
 	}
-
 }

@@ -11,14 +11,17 @@ import android.content.Intent;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class BusLocationReceiver extends BroadcastReceiver {
+	static boolean loadingPermission = false;
 	@Override
 	public void onReceive(Context ctxt, Intent i) {
 		if (i.getAction().equals(BusLocationService.ACTION_BUS_LOCATION)) {
 			Intent locServiceIntent = new Intent(ctxt, BusLocationService.class);
 			locServiceIntent.putExtra("ids", i.getIntegerArrayListExtra("ids"));
+			loadingPermission = true;
 			WakefulIntentService.sendWakefulWork(ctxt, locServiceIntent);
 		} else if (i.getAction().equals(BusLocationService.ACTION_BUS_LOADED)) {
-			((DubnaBusActivity)ctxt).addBuses();
+			if (loadingPermission)
+				((DubnaBusActivity)ctxt).addBuses();
 		}
 	}
 

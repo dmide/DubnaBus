@@ -90,4 +90,8 @@ public class BusLocationService extends WakefulIntentService {
 		}
 		Bus.setTime(time);
 	}
+	
+	void stop(){
+		stopSelf();
+	}
 }

@@ -33,7 +33,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog, null);
 		et = (EditText) form.findViewById(R.id.value);
 		et.setText(String.valueOf(delay));
-		AlertDialog.Builder	builder = new AlertDialog.Builder(getActivity());
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		return (builder.setTitle(R.string.dlg_title).setView(form)
 				.setPositiveButton(android.R.string.yes, this)
 				.setNegativeButton(android.R.string.no, null).create());
@@ -47,24 +47,30 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 			prefs.edit().putInt("notificationDelay", delay).apply();
 			Entry<Date, Integer> actualDelay = ((DubnaBusActivity) getActivity())
 					.getModel().observeBusStop(delay);
-			Calendar actualDelayCal = new GregorianCalendar();
-			actualDelayCal.setTime(actualDelay.getKey());
-			Toast.makeText(
-					getActivity(),
-					"Минут до оповещения: "
-							+ String.valueOf(actualDelayCal
-									.get(Calendar.MINUTE))
-							+ ". Ожидается автобус №"
-							+ actualDelay.getValue().toString(),
-					Toast.LENGTH_LONG).show();
-			// Toast.makeText(getActivity(),
-			// "Минут до оповещения: 10. Ожидается автобус №666",
-			// Toast.LENGTH_LONG).show();
-			NotificationReceiver.scheduleAlarm(getActivity(),
-					actualDelayCal.get(Calendar.MINUTE) * 60000, delay,
-					actualDelay.getValue().toString());
-			// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
-			// "666");
+			if (actualDelay != null) {
+				Calendar actualDelayCal = new GregorianCalendar();
+				actualDelayCal.setTime(actualDelay.getKey());
+				Toast.makeText(
+						getActivity(),
+						"Минут до оповещения: "
+								+ String.valueOf(actualDelayCal
+										.get(Calendar.MINUTE))
+								+ ". Ожидается автобус №"
+								+ actualDelay.getValue().toString(),
+						Toast.LENGTH_LONG).show();
+				// Toast.makeText(getActivity(),
+				// "Минут до оповещения: 10. Ожидается автобус №42",
+				// Toast.LENGTH_LONG).show();
+				NotificationReceiver.scheduleAlarm(getActivity(),
+						actualDelayCal.get(Calendar.MINUTE) * 60000, delay,
+						actualDelay.getValue().toString());
+				// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
+				// "42");
+			} else {
+				Toast.makeText(getActivity(),
+						"К сожалению, на выбранных маршрутах нет автобусов, удовлетворяющих условиям",
+						Toast.LENGTH_LONG).show();
+			}
 		} else {
 			Toast.makeText(getActivity(),
 					"Время ожидания должно быть меньше 60 минут",

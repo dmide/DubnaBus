@@ -284,7 +284,7 @@ public class ModelFragment extends SherlockFragment {
 								.position(new LatLng(lat, lng))
 								.title(desc)
 								.icon(BitmapDescriptorFactory
-										.fromAsset("mdpi_busstop4.png")));
+										.fromAsset("bustop31.png")));
 				descStopIdMap.put(desc, id);
 			}
 		}
