@@ -26,20 +26,25 @@ public class BusLocationService extends WakefulIntentService {
 	protected void doWakefulWork(Intent intent) {
 		BufferedReader reader = null;
 		ArrayList<Integer> ids = intent.getIntegerArrayListExtra("ids");
+		StringBuilder buf;
+		int i = 0;
 		try {
 			for (int id : ids) {
-				URL url = new URL(BUS_LOCATION_URL + String.valueOf(id));
-				HttpURLConnection c = (HttpURLConnection) url.openConnection();
-				c.setRequestMethod("GET");
-				c.setReadTimeout(15000);
-				c.connect();
-				reader = new BufferedReader(new InputStreamReader(
-						c.getInputStream()));
-				StringBuilder buf = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					buf.append(line + "\n");
-				}
+				do {
+					URL url = new URL(BUS_LOCATION_URL + String.valueOf(id));
+					HttpURLConnection c = (HttpURLConnection) url
+							.openConnection();
+					c.setRequestMethod("GET");
+					c.setReadTimeout(15000);
+					c.connect();
+					reader = new BufferedReader(new InputStreamReader(
+							c.getInputStream()));
+					buf = new StringBuilder();
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						buf.append(line + "\n");
+					}
+				} while (buf.toString().equals("\n") && (++i < 5));
 				parseBusLocs(buf.toString().replaceAll(",", "."), id);
 			}
 			intent = new Intent(ACTION_BUS_LOADED);
@@ -88,10 +93,12 @@ public class BusLocationService extends WakefulIntentService {
 		if (tmp > 0) {
 			time = page.substring(tmp - 2, tmp + 3);
 		}
-		Bus.setTime(time);
+		if (!time.isEmpty()) {
+			Bus.setTime(time);
+		}
 	}
-	
-	void stop(){
+
+	void stop() {
 		stopSelf();
 	}
 }

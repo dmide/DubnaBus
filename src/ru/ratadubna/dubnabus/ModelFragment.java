@@ -128,17 +128,22 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	private String loadPage(URL url) throws Exception {
+		StringBuilder buf;
+		int i = 0;
 		BufferedReader reader = null;
-		HttpURLConnection c = (HttpURLConnection) url.openConnection();
-		c.setRequestMethod("GET");
-		c.setReadTimeout(15000);
-		c.connect();
-		reader = new BufferedReader(new InputStreamReader(c.getInputStream()));
-		StringBuilder buf = new StringBuilder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			buf.append(line + "\n");
-		}
+		do {
+			HttpURLConnection c = (HttpURLConnection) url.openConnection();
+			c.setRequestMethod("GET");
+			c.setReadTimeout(15000);
+			c.connect();
+			reader = new BufferedReader(new InputStreamReader(
+					c.getInputStream()));
+			buf = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				buf.append(line + "\n");
+			}
+		} while (buf.toString().equals("\n") && (++i < 5));
 		if (reader != null) {
 			try {
 				reader.close();
@@ -147,6 +152,7 @@ public class ModelFragment extends SherlockFragment {
 						"Exception closing HUC reader", e);
 			}
 		}
+
 		return buf.toString();
 	}
 
