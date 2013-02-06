@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">DubnaBus</string>
@@ -15,13 +16,13 @@
     <string name="dlg_yes">Да</string>
     <string name="dlg_no">Нет</string>
     <string name="kmph">км/ч</string>
-    <string name="min_before_alarm">Минут до оповещения: </string>
+    <string name="min_before_alarm">Минут до оповещения:&#160;</string>
     <string name="awaiting_bus">. Ожидается автобус №</string>
     <string name="no_bus">К сожалению, на выбранных маршрутах нет автобусов, удовлетворяющих условиям</string>
     <string name="waiting_time_limit">Время ожидания должно быть меньше 60 минут</string>
     <string name="bus_number">Автобус №</string>
-    <string name="min"> мин.</string>
-    <string name="arrives_in">Прибудет через </string>
+    <string name="min">&#160;мин.</string>
+    <string name="arrives_in">Прибудет через&#160;</string>
     <string name="bus_notification">Автобус</string>
     <string name="trainsDM">Поезда Дубна-Москва</string>
     <string name="trainsMD">Поезда Москва-Дубна</string>

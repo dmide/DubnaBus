@@ -29,7 +29,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private ModelFragment model = null;
 	private BusStopObserverDialogFragment dialog = null;
 	private BusLocationReceiver receiver = new BusLocationReceiver();
-	private float zoom = 13;
 	private boolean noSchedule = false;
 	static final String MODEL = "model";
 	static final String DIALOG = "dialog";
@@ -38,6 +37,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private final String trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban";
 	private final String busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215";
 	private final String busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus";
+	public static boolean reloadOverlays;
 
 	static Context getCtxt() {
 		return context;
@@ -124,8 +124,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	 * MenuActivity.class); startActivity(i); return (true); } return
 	 * super.onKeyDown(keycode, e); }
 	 */
+
 	private void setUpMapIfNeeded() {
 		if (mMap == null) {
+			reloadOverlays = true; // to redraw buses in case of activity reopen
+									// (buses instances are in memory, mMap is
+									// null)
 			SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFrag.setRetainInstance(true);
@@ -135,9 +139,10 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			mMap.setOnMarkerClickListener(this);
 			mMap.setOnCameraChangeListener(this);
 			mMap.setOnInfoWindowClickListener(this);
-			if (!model.mapRoutesLoaded) {
-				model.loadMapRoutes();
-			}
+			model.loadMapRoutes();
+		} else if (reloadOverlays) {
+			mMap.clear();
+			model.loadMapRoutes();
 		}
 	}
 
@@ -179,7 +184,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		Bus bus = Bus.getBusByMarker(marker);
 		marker.setSnippet("<img src=\"file:///android_res/drawable/"
 				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
-				+ R.string.kmph);
+				+ getString(R.string.kmph));
 		marker.showInfoWindow();
 	}
 
@@ -194,7 +199,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
 	void addBuses() {
 		for (Bus bus : Bus.getList()) {
-			if (bus.isActive()) {
+			if (bus.isActive() && !reloadOverlays) {
 				bus.updateOverlay();
 				bus.updateMarker();
 			} else {
@@ -205,15 +210,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 				bus.setMarker(marker);
 			}
 		}
-
+		reloadOverlays = false;
 	}
 
 	@Override
 	public void onCameraChange(CameraPosition position) {
-		if (position.zoom != zoom) {
-			zoom = position.zoom;
-			Bus.redrawOnZoomChange(mMap.getProjection());
-		}
+		Bus.redrawOnZoomChange(mMap.getProjection());
 	}
 
 }

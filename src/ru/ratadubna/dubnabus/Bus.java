@@ -36,6 +36,7 @@ public class Bus {
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
 	private Marker marker = null;
+	private static float dimensions = 196;
 
 	static {
 		busTypes.put(59, "busType59.png");
@@ -48,7 +49,7 @@ public class Bus {
 		this.type = type;
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
-				.position(position, 196).bearing(bearing).zIndex(100);
+				.position(position, dimensions).bearing(bearing).zIndex(100);
 		String title = "¹" + String.valueOf(BusRoutes.realIdByServiceId(route));
 		markerOptions = new MarkerOptions().position(position).title(title)
 				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
@@ -152,7 +153,7 @@ public class Bus {
 	static void updateBus(String id, LatLng position, int speed, int bearing) {
 		for (Bus bus : busList) {
 			if (bus.getId().equals(id)) {
-				bus.groundOverlayOptions.position(position, 196);
+				bus.groundOverlayOptions.position(position, dimensions);
 				bus.speed = speed;
 				bus.groundOverlayOptions.bearing(bearing);
 			}
@@ -167,9 +168,10 @@ public class Bus {
 		float[] results = new float[3];
 		Location.distanceBetween(ll1.latitude, ll1.longitude, ll2.latitude,
 				ll2.longitude, results);
+		dimensions = results[0];
 		for (Bus bus : busList) {
 			if (bus.isActive()) {
-				bus.overlay.setDimensions(results[0]);
+				bus.overlay.setDimensions(dimensions);
 			}
 		}
 	}

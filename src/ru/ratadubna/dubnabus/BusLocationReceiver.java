@@ -33,6 +33,6 @@ public class BusLocationReceiver extends BroadcastReceiver {
 		PendingIntent pi = PendingIntent.getBroadcast(ctxt, 1337, i,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		mgr.setRepeating(AlarmManager.RTC,
-				System.currentTimeMillis(), 13000, pi);
+				System.currentTimeMillis(), 10000, pi);
 	}
 }

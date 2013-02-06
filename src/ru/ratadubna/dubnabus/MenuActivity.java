@@ -1,6 +1,5 @@
 package ru.ratadubna.dubnabus;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,13 +26,14 @@ public class MenuActivity extends SherlockFragmentActivity {
 	}
 	
 	public void onChooseClick(View v) {
-		startActivity(new Intent(this, DubnaBusActivity.class));
+		//startActivity(new Intent(this, DubnaBusActivity.class));
 		Bus.clearList();
 		BusLocationReceiver.loadingPermission = false;
+		DubnaBusActivity.reloadOverlays = true;
+		finish();
 	}
 	
 	public void onCancelClick(View v) {
 		finish();
 	}
-	
 }

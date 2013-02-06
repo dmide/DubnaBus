@@ -208,6 +208,7 @@ public class ModelFragment extends SherlockFragment {
 		protected Void doInBackground(Context... ctxt) {
 			try {
 				for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
+					descStopIdMap.clear();
 					if (prefs.getBoolean(i.toString(), false)) {
 						int id = prefs.getInt("id_at_" + i.toString(), 0);
 						String page = loadPage(

@@ -52,10 +52,10 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 				actualDelayCal.setTime(actualDelay.getKey());
 				Toast.makeText(
 						getActivity(),
-						R.string.min_before_alarm
+						getString(R.string.min_before_alarm)
 								+ String.valueOf(actualDelayCal
 										.get(Calendar.MINUTE))
-								+ R.string.awaiting_bus
+								+ getString(R.string.awaiting_bus)
 								+ actualDelay.getValue().toString(),
 						Toast.LENGTH_LONG).show();
 				// Toast.makeText(getActivity(),
@@ -69,12 +69,12 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 			} else {
 				Toast.makeText(
 						getActivity(),
-						R.string.no_bus,
+						getString(R.string.no_bus),
 						Toast.LENGTH_LONG).show();
 			}
 		} else {
 			Toast.makeText(getActivity(),
-					R.string.waiting_time_limit,
+					getString(R.string.waiting_time_limit),
 					Toast.LENGTH_LONG).show();
 		}
 	}
