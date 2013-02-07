@@ -49,8 +49,7 @@ public class MenuFragment extends SherlockFragment implements
 		tv.setChecked(!tv.isChecked());
 	}
 
-	public void onPause() {
-		super.onPause();
+	void saveSelection(){
 		SharedPreferences.Editor editor = prefs.edit();
 		Integer i = 0;
 		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
@@ -61,7 +60,7 @@ public class MenuFragment extends SherlockFragment implements
 		editor.putInt(ModelFragment.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
 	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();

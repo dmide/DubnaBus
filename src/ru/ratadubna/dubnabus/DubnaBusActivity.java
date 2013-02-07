@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
@@ -193,9 +192,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
 	void addRoute(PolylineOptions mapRoute) {
 		int color = 0x6F000000; //AARRGGBB
-		for (int i = 0; i<3; i++){
-			color+= (random.nextInt(150)+105) << (i*8);
-		}
+		color+= (random.nextInt(150)+105);//R
+		color+= (random.nextInt(120)+75) << 8;//G
+		color+= (random.nextInt(150)+105) << 16;//B
 		//color += new Random().nextInt(8388608);
 		mapRoute.color(color);
 		mMap.addPolyline(mapRoute);
