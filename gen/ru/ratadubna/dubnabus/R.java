@@ -1081,8 +1081,8 @@ containing a value of this type.
         public static final int abs__title=0x7f04001e;
         public static final int abs__titleDivider=0x7f04001f;
         public static final int abs__up=0x7f04000e;
-        public static final int busesDM=0x7f040041;
-        public static final int busesMD=0x7f040042;
+        public static final int busesDM=0x7f040042;
+        public static final int busesMD=0x7f040043;
         public static final int but=0x7f040039;
         public static final int cancel=0x7f04003a;
         public static final int checkView=0x7f04003b;
@@ -1101,10 +1101,11 @@ containing a value of this type.
         public static final int showTitle=0x7f04000a;
         public static final int snippet=0x7f04003d;
         public static final int tabMode=0x7f040006;
+        public static final int taxi=0x7f04003f;
         public static final int terrain=0x7f040003;
         public static final int title=0x7f04003c;
-        public static final int trainsDM=0x7f04003f;
-        public static final int trainsMD=0x7f040040;
+        public static final int trainsDM=0x7f040040;
+        public static final int trainsMD=0x7f040041;
         public static final int useLogo=0x7f040007;
         public static final int value=0x7f040036;
         public static final int wrap_content=0x7f040004;
@@ -1244,6 +1245,7 @@ containing a value of this type.
         Google Play services (from Play Store) [CHAR LIMIT=40] 
          */
         public static final int common_google_play_services_update_title=0x7f050007;
+        public static final int connection_problem=0x7f050036;
         public static final int dlg_no=0x7f050027;
         public static final int dlg_note1=0x7f050024;
         public static final int dlg_note2=0x7f050025;
@@ -1259,6 +1261,7 @@ containing a value of this type.
         public static final int no_bus=0x7f05002b;
         public static final int route_selection=0x7f05001b;
         public static final int submit_routes=0x7f05001e;
+        public static final int taxi=0x7f050035;
         public static final int title_activity_dubna_bus=0x7f05001c;
         public static final int trainsDM=0x7f050031;
         public static final int trainsMD=0x7f050032;

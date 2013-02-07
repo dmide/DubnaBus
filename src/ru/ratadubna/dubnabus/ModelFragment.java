@@ -127,7 +127,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private String loadPage(URL url) throws Exception {
+	static String loadPage(URL url) throws Exception {
 		StringBuilder buf;
 		int i = 0;
 		BufferedReader reader = null;
@@ -148,8 +148,8 @@ public class ModelFragment extends SherlockFragment {
 			try {
 				reader.close();
 			} catch (IOException e) {
-				Log.e(getClass().getSimpleName(),
-						"Exception closing HUC reader", e);
+				Log.e("ModelFragment loadPage", "Exception closing HUC reader",
+						e);
 			}
 		}
 
@@ -165,7 +165,7 @@ public class ModelFragment extends SherlockFragment {
 				String page = loadPage(new URL(ROUTES_URL));
 				if (!page.contains("<li"))
 					throw new Exception("Connection problem");
-				ParseRoutes(page);
+				parseRoutes(page);
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
 						"Exception retrieving bus routes content", e);
@@ -175,16 +175,12 @@ public class ModelFragment extends SherlockFragment {
 
 		@Override
 		public void onPostExecute(Void arg0) {
-			if (e == null) {
+			if (e == null)
 				deliverModel();
-			} else {
-				Log.e(getClass().getSimpleName(), "Exception loading contents",
-						e);
-			}
 		}
 	}
 
-	private void ParseRoutes(String page) {
+	private void parseRoutes(String page) {
 		Pattern pattern = Pattern.compile("<li(.*)</li>"), pattern2 = Pattern
 				.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name"), pattern3 = Pattern
 				.compile("№(\\d+)");
@@ -245,9 +241,6 @@ public class ModelFragment extends SherlockFragment {
 					BusLocationReceiver.scheduleAlarm(getActivity()
 							.getApplicationContext(), ids);
 				}
-			} else {
-				Log.e(getClass().getSimpleName(), "Exception loading contents",
-						e);
 			}
 		}
 	}
@@ -329,9 +322,6 @@ public class ModelFragment extends SherlockFragment {
 				lastBusSchedule = parseSchedule(page);
 				((DubnaBusActivity) getActivity()).setBusStopSnippet(
 						lastBusSchedule, marker);
-			} else {
-				Log.e(getClass().getSimpleName(), "Exception loading contents",
-						e);
 			}
 		}
 	}

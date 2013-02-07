@@ -28,5 +28,7 @@
     <string name="trainsMD">Поезда Москва-Дубна</string>
     <string name="busesDM">Автобусы Дубна-Москва</string>
     <string name="busesMD">Автобусы Москва-Дубна</string>
+    <string name="taxi">Такси</string>
+    <string name="connection_problem">При загрузке страницы возникли проблемы</string>
 
 </resources>

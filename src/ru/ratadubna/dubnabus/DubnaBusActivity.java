@@ -37,8 +37,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private final String trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban";
 	private final String busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215";
 	private final String busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus";
+	private final String taxiurl = "parse:http://www.dubna.ru/143";
 	public static boolean reloadOverlays;
-	private Random random;
+	private static Random random = new Random();
 
 	static Context getCtxt() {
 		return context;
@@ -69,7 +70,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		random = new Random();
 		context = getApplicationContext();
 		setTheme(R.style.Theme_Sherlock_Light);
 		if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
@@ -94,6 +94,11 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		switch (item.getItemId()) {
 		case R.id.route_selection:
 			Intent i = new Intent(this, MenuActivity.class);
+			startActivity(i);
+			return (true);
+		case R.id.taxi:
+			i = new Intent(this, SimpleContentActivity.class);
+			i.putExtra(SimpleContentActivity.EXTRA_DATA, taxiurl);
 			startActivity(i);
 			return (true);
 		case R.id.trainsDM:
@@ -141,6 +146,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			mMap.setOnMarkerClickListener(this);
 			mMap.setOnCameraChangeListener(this);
 			mMap.setOnInfoWindowClickListener(this);
+			mMap.setMyLocationEnabled(true);
 			model.loadMapRoutes();
 		} else if (reloadOverlays) {
 			mMap.clear();
@@ -190,12 +196,16 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		marker.showInfoWindow();
 	}
 
+	private synchronized int nextRand(int bound) {
+		return random.nextInt(bound);
+	}
+
 	void addRoute(PolylineOptions mapRoute) {
-		int color = 0x6F000000; //AARRGGBB
-		color+= (random.nextInt(150)+105);//R
-		color+= (random.nextInt(120)+75) << 8;//G
-		color+= (random.nextInt(150)+105) << 16;//B
-		//color += new Random().nextInt(8388608);
+		int color = 0x6F000000; // AARRGGBB
+		color += (nextRand(150) + 105);// B
+		color += (nextRand(120) + 55) << 8;// G
+		color += (nextRand(150) + 105) << 16;// R
+		// color += new Random().nextInt(8388608);
 		mapRoute.color(color);
 		mMap.addPolyline(mapRoute);
 	}
