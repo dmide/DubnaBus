@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
@@ -38,6 +39,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private final String busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215";
 	private final String busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus";
 	public static boolean reloadOverlays;
+	private Random random;
 
 	static Context getCtxt() {
 		return context;
@@ -68,6 +70,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		random = new Random();
 		context = getApplicationContext();
 		setTheme(R.style.Theme_Sherlock_Light);
 		if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
@@ -189,7 +192,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	}
 
 	void addRoute(PolylineOptions mapRoute) {
-		mapRoute.color(-(new Random().nextInt(2147483647)));
+		int color = 0x6F000000; //AARRGGBB
+		for (int i = 0; i<3; i++){
+			color+= (random.nextInt(150)+105) << (i*8);
+		}
+		//color += new Random().nextInt(8388608);
+		mapRoute.color(color);
 		mMap.addPolyline(mapRoute);
 	}
 

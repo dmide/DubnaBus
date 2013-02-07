@@ -49,7 +49,7 @@ public class Bus {
 		this.type = type;
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
-				.position(position, dimensions).bearing(bearing).zIndex(100);
+				.position(position, dimensions).bearing(bearing).zIndex(1);
 		String title = "¹" + String.valueOf(BusRoutes.realIdByServiceId(route));
 		markerOptions = new MarkerOptions().position(position).title(title)
 				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
