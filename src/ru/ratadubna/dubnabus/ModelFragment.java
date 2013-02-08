@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -41,7 +42,8 @@ public class ModelFragment extends SherlockFragment {
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
 	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
-	private String lastBusSchedule;
+	String lastBusSchedule;
+	private Random random = new Random();
 
 	void loadMapRoutes() {
 		GetRouteMapTask getRouteMapTask;
@@ -201,6 +203,15 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
+	Integer getColor(){
+		Integer color = 0x6F000000; // AARRGGBB
+		color += random.nextInt(8388608);
+		color &= 0xFFFF00FF;					//weaken the green part 
+		color += (random.nextInt(50) + 55) << 8;//because bus icons are green
+		return color;
+	}
+	
+	
 	private class GetRouteMapTask extends AsyncTask<Context, Void, Void> {
 		private Exception e = null;
 		ArrayList<String> pages = new ArrayList<String>();
@@ -234,7 +245,7 @@ public class ModelFragment extends SherlockFragment {
 			if (e == null) {
 				for (int i = 0; i < pages.size(); i++) {
 					parseMapMarkers(pages.get(i), ids.get(i));
-					parseMapRoute(pages.get(i));
+					((DubnaBusActivity) getActivity()).addRoute(parseMapRoute(pages.get(i)).color(getColor()));
 				}
 				mapRoutesLoaded = true;
 				if (!ids.isEmpty()) {
@@ -245,7 +256,7 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private void parseMapRoute(String page) {
+	private PolylineOptions parseMapRoute(String page) {
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
@@ -255,10 +266,10 @@ public class ModelFragment extends SherlockFragment {
 			if (matcher.find())
 				lng = Double.parseDouble(matcher.group());
 			else
-				return;
+				return null;
 			mapRoute.add(new LatLng(lat, lng));
 		}
-		((DubnaBusActivity) getActivity()).addRoute(mapRoute);
+		return mapRoute;
 	}
 
 	private void parseMapMarkers(String page, int routeId) {
@@ -320,8 +331,8 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				lastBusSchedule = parseSchedule(page);
-				((DubnaBusActivity) getActivity()).setBusStopSnippet(
-						lastBusSchedule, marker);
+				marker.setSnippet(lastBusSchedule);
+				marker.showInfoWindow();
 			}
 		}
 	}

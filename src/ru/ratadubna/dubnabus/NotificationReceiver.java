@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -19,16 +20,23 @@ public class NotificationReceiver extends BroadcastReceiver {
 					ctxt);
 			Intent toLaunch = new Intent(ctxt, DubnaBusActivity.class);
 			PendingIntent pi = PendingIntent.getActivity(ctxt, 0, toLaunch, 0);
+			long[] vibPattern = { 0, 100, 200, 300 };
 			builder.setAutoCancel(true)
 					.setContentIntent(pi)
 					.setContentTitle(
-							ctxt.getString(R.string.bus_number) + i.getStringExtra("bus_number"))
+							ctxt.getString(R.string.bus_number)
+									+ i.getStringExtra("bus_number"))
 					.setContentText(
 							ctxt.getString(R.string.arrives_in)
 									+ String.valueOf(i.getIntExtra("delay", 0))
 									+ ctxt.getString(R.string.min))
 					.setSmallIcon(R.drawable.ic_stat_example)
-					.setTicker(ctxt.getString(R.string.bus_notification)).setWhen(System.currentTimeMillis());
+					.setTicker(ctxt.getString(R.string.bus_notification))
+					.setWhen(System.currentTimeMillis())
+					.setVibrate(vibPattern)
+					.setSound(
+							RingtoneManager
+									.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 			NotificationManager mgr = ((NotificationManager) ctxt
 					.getSystemService(Context.NOTIFICATION_SERVICE));
 			mgr.notify(NOTIFY_ID, builder.getNotification());

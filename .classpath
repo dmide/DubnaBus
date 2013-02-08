@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Dmide/.android/GoogleAdMobAdsSdk-6.2.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

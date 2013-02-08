@@ -1,7 +1,5 @@
 package ru.ratadubna.dubnabus;
 
-import java.util.Random;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -29,17 +27,14 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private ModelFragment model = null;
 	private BusStopObserverDialogFragment dialog = null;
 	private BusLocationReceiver receiver = new BusLocationReceiver();
-	private boolean noSchedule = false;
-	static final String MODEL = "model";
-	static final String DIALOG = "dialog";
+	static final String MODEL = "model", DIALOG = "dialog";
 	private static Context context;
-	private final String trainsDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=suburban&fromId=c215";
-	private final String trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban";
-	private final String busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215";
-	private final String busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus";
-	private final String taxiurl = "parse:http://www.dubna.ru/143";
+	private final String trainsDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=suburban&fromId=c215",
+			trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban",
+			busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215",
+			busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus",
+			taxiurl = "parse:http://www.dubna.ru/143";
 	public static boolean reloadOverlays;
-	private static Random random = new Random();
 
 	static Context getCtxt() {
 		return context;
@@ -164,9 +159,18 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		return false;
 	}
 
+	void setBusSnippet(Marker marker) {
+		Bus bus = Bus.getBusByMarker(marker);
+		marker.setSnippet("<img src=\"file:///android_res/drawable/"
+				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
+				+ getString(R.string.kmph));
+		marker.showInfoWindow();
+	}
+
 	@Override
 	public void onInfoWindowClick(Marker marker) {
-		if (!marker.getTitle().matches("(№\\d{1,3})") && !noSchedule) {
+		if (!marker.getTitle().matches("(№\\d{1,3})")
+				&& !model.lastBusSchedule.isEmpty()) {
 			if (getSupportFragmentManager().findFragmentByTag(DIALOG) == null) {
 				dialog = new BusStopObserverDialogFragment();
 				getSupportFragmentManager().beginTransaction()
@@ -182,31 +186,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		return model;
 	}
 
-	void setBusStopSnippet(String schedule, Marker marker) {
-		noSchedule = schedule.isEmpty();
-		marker.setSnippet(schedule);
-		marker.showInfoWindow();
-	}
-
-	void setBusSnippet(Marker marker) {
-		Bus bus = Bus.getBusByMarker(marker);
-		marker.setSnippet("<img src=\"file:///android_res/drawable/"
-				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
-				+ getString(R.string.kmph));
-		marker.showInfoWindow();
-	}
-
-	private synchronized int nextRand(int bound) {
-		return random.nextInt(bound);
-	}
-
 	void addRoute(PolylineOptions mapRoute) {
-		int color = 0x6F000000; // AARRGGBB
-		color += (nextRand(150) + 105);// B
-		color += (nextRand(120) + 55) << 8;// G
-		color += (nextRand(150) + 105) << 16;// R
-		// color += new Random().nextInt(8388608);
-		mapRoute.color(color);
 		mMap.addPolyline(mapRoute);
 	}
 
