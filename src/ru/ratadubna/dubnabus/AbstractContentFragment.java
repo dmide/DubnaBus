@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 abstract public class AbstractContentFragment extends WebViewFragment {
 	abstract String getPage();
@@ -83,12 +84,10 @@ abstract public class AbstractContentFragment extends WebViewFragment {
 				.compile("(8[\\d\\(\\)\\s-]{14,15})");
 		Matcher matcher = pattern.matcher(page);
 		if (matcher.find()) {
-			String phone, result = matcher
-					.group()
+			String phone, result = matcher.group()
 					.replaceAll("(21[\\d-]{7}<br[\\s>/]+)", "")
 					.replaceAll("(\\(49621\\)[\\d\\s-]+<br[\\s>/]+)", "")
-					.replaceAll("\\(9", "8(9")
-					.replaceAll("[\\(\\)]\\s*", "-")
+					.replaceAll("\\(9", "8(9").replaceAll("[\\(\\)]\\s*", "-")
 					.replaceAll("<tr>\\s+<td colspan=5><hr></td>\\s+</tr>", "")
 					.replace("lightgrey", "lightblue");
 			matcher = pattern2.matcher(result);
@@ -98,7 +97,12 @@ abstract public class AbstractContentFragment extends WebViewFragment {
 						+ "\">" + phone + "</a>");
 			}
 			return result;
-		} else
-			return getActivity().getString(R.string.connection_problem);
+		} else {
+			Toast.makeText(getActivity(),
+					DubnaBusActivity.getCtxt().getString(R.string.problem),
+					Toast.LENGTH_LONG).show();
+			return DubnaBusActivity.getCtxt().getString(
+					R.string.connection_problem);
+		}
 	}
 }

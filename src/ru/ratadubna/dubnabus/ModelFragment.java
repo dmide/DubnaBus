@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -35,15 +36,19 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class ModelFragment extends SherlockFragment {
 	private ContentsLoadTask contentsTask = null;
-	boolean mapRoutesLoaded = false;
-	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1";
-	private static final String MAP_ROUTES_URL = "http://ratadubna.ru/nav/d.php?o=2&m=";
-	private static final String SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
+	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1",
+			MAP_ROUTES_URL = "http://ratadubna.ru/nav/d.php?o=2&m=",
+			SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
 	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
 	String lastBusSchedule;
 	private Random random = new Random();
+
+	private void showProblemToast() {
+		Toast.makeText(getActivity(), getString(R.string.problem),
+				Toast.LENGTH_LONG).show();
+	}
 
 	void loadMapRoutes() {
 		GetRouteMapTask getRouteMapTask;
@@ -177,12 +182,15 @@ public class ModelFragment extends SherlockFragment {
 
 		@Override
 		public void onPostExecute(Void arg0) {
-			if (e == null)
+			if (e == null) {
 				deliverModel();
+			} else {
+				showProblemToast();
+			}
 		}
 	}
 
-	private void parseRoutes(String page) {
+	private void parseRoutes(String page) throws Exception {
 		Pattern pattern = Pattern.compile("<li(.*)</li>"), pattern2 = Pattern
 				.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name"), pattern3 = Pattern
 				.compile("№(\\d+)");
@@ -198,20 +206,20 @@ public class ModelFragment extends SherlockFragment {
 				matcher2 = pattern3.matcher(text);
 				matcher2.find();
 				BusRoutes.add(id, text, Integer.parseInt(matcher2.group(1)));
-			} else
-				return;
+			} else {
+				throw new Exception("Problem in parseRoutes");
+			}
 		}
 	}
 
-	Integer getColor(){
+	Integer getColor() {
 		Integer color = 0x6F000000; // AARRGGBB
 		color += random.nextInt(8388608);
-		color &= 0xFFFF00FF;					//weaken the green part 
-		color += (random.nextInt(50) + 55) << 8;//because bus icons are green
+		//color &= 0xFFFF00FF; // weaken the green part
+		//color += (random.nextInt(50) + 25) << 8;// because bus icons are green
 		return color;
 	}
-	
-	
+
 	private class GetRouteMapTask extends AsyncTask<Context, Void, Void> {
 		private Exception e = null;
 		ArrayList<String> pages = new ArrayList<String>();
@@ -244,19 +252,27 @@ public class ModelFragment extends SherlockFragment {
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
 				for (int i = 0; i < pages.size(); i++) {
-					parseMapMarkers(pages.get(i), ids.get(i));
-					((DubnaBusActivity) getActivity()).addRoute(parseMapRoute(pages.get(i)).color(getColor()));
+					try {
+						parseMapMarkers(pages.get(i), ids.get(i));
+						((DubnaBusActivity) getActivity())
+								.addRoute(parseMapRoute(pages.get(i)).color(
+										getColor()));
+					} catch (Exception e) {
+						showProblemToast();
+					}// parseMapMarkers() and parseMapRoute() are here because
+						// operations with the Map object must be in the main thread
 				}
-				mapRoutesLoaded = true;
 				if (!ids.isEmpty()) {
 					BusLocationReceiver.scheduleAlarm(getActivity()
 							.getApplicationContext(), ids);
 				}
+			} else {
+				showProblemToast();
 			}
 		}
 	}
 
-	private PolylineOptions parseMapRoute(String page) {
+	private PolylineOptions parseMapRoute(String page) throws Exception {
 		Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
 		Matcher matcher = pattern.matcher(page);
 		PolylineOptions mapRoute = new PolylineOptions();
@@ -266,13 +282,13 @@ public class ModelFragment extends SherlockFragment {
 			if (matcher.find())
 				lng = Double.parseDouble(matcher.group());
 			else
-				return null;
+				throw new Exception("parseMapRoute problem");
 			mapRoute.add(new LatLng(lat, lng));
 		}
 		return mapRoute;
 	}
 
-	private void parseMapMarkers(String page, int routeId) {
+	private void parseMapMarkers(String page, int routeId) throws Exception {
 		Pattern pattern = Pattern.compile("(.+\\s\\w+\\s)");
 		Pattern pattern2 = Pattern
 				.compile("([0-9]{2}.[0-9]+)\\s+([0-9]{2}.[0-9]+)\\s+(.+)\\s+([0-9]+)");
@@ -289,7 +305,7 @@ public class ModelFragment extends SherlockFragment {
 				desc = matcher2.group(3);
 				id = Integer.parseInt(matcher2.group(4));
 			} else
-				return;
+				throw new Exception("parseMapMarkers problem");
 			if (!descStopIdMap.containsValue(id)) {
 				((DubnaBusActivity) getActivity())
 						.addMarker(new MarkerOptions()
@@ -320,6 +336,7 @@ public class ModelFragment extends SherlockFragment {
 						.replaceAll(",", ".");
 				if (!page.contains("<li"))
 					throw new Exception("Connection problem");
+				lastBusSchedule = parseSchedule(page);
 			} catch (Exception e) {
 				Log.e(getClass().getSimpleName(),
 						"Exception retrieving bus schedule content", e);
@@ -330,14 +347,15 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
-				lastBusSchedule = parseSchedule(page);
 				marker.setSnippet(lastBusSchedule);
 				marker.showInfoWindow();
+			} else {
+				showProblemToast();
 			}
 		}
 	}
 
-	private String parseSchedule(String page) {
+	private String parseSchedule(String page) throws Exception {
 		Pattern pattern = Pattern.compile("(<li>.+</li>)");
 		Pattern pattern2 = Pattern.compile("([№:\\d]+)");
 		Matcher matcher = pattern.matcher(page);
@@ -358,6 +376,8 @@ public class ModelFragment extends SherlockFragment {
 					}
 					result.append("<br />");
 				}
+			} else {
+				throw new Exception("parseSchedule problem");
 			}
 		}
 		String strResult = result.toString();

@@ -1259,6 +1259,7 @@ containing a value of this type.
         public static final int min=0x7f05002e;
         public static final int min_before_alarm=0x7f050029;
         public static final int no_bus=0x7f05002b;
+        public static final int problem=0x7f050037;
         public static final int route_selection=0x7f05001b;
         public static final int submit_routes=0x7f05001e;
         public static final int taxi=0x7f050035;

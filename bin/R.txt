@@ -409,6 +409,7 @@ int string loading_routes 0x7f05001d
 int string min 0x7f05002e
 int string min_before_alarm 0x7f050029
 int string no_bus 0x7f05002b
+int string problem 0x7f050037
 int string route_selection 0x7f05001b
 int string submit_routes 0x7f05001e
 int string taxi 0x7f050035

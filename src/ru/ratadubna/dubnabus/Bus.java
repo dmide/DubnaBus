@@ -82,6 +82,7 @@ public class Bus {
 	void setOverlay(GroundOverlay overlay) {
 		this.overlay = overlay;
 		activeBuses.add(id);
+		this.overlay.setDimensions(dimensions);
 	}
 
 	void setMarker(Marker marker) {
