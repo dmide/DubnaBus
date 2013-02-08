@@ -62,7 +62,8 @@ public class ModelFragment extends SherlockFragment {
 		executeAsyncTask(getScheduleTask, getActivity().getApplicationContext());
 	}
 
-	Date getTimeDelay(int targetDelay, Integer route) throws ParseException {
+	private Date getTimeDelay(int targetDelay, Integer route)
+			throws ParseException {
 		Pattern pattern = Pattern.compile("¹" + route.toString()
 				+ "[<&](.+?)<br"), pattern2;
 		Matcher matcher = pattern.matcher(lastBusSchedule), matcher2;
@@ -182,9 +183,7 @@ public class ModelFragment extends SherlockFragment {
 
 		@Override
 		public void onPostExecute(Void arg0) {
-			if (e == null) {
-				deliverModel();
-			} else {
+			if (e != null) {
 				showProblemToast();
 			}
 		}
@@ -212,11 +211,12 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	Integer getColor() {
+	private Integer getColor() {
 		Integer color = 0x6F000000; // AARRGGBB
 		color += random.nextInt(8388608);
-		//color &= 0xFFFF00FF; // weaken the green part
-		//color += (random.nextInt(50) + 25) << 8;// because bus icons are green
+		// color &= 0xFFFF00FF; // weaken the green part
+		// color += (random.nextInt(50) + 25) << 8;// because bus icons are
+		// green
 		return color;
 	}
 
@@ -228,8 +228,8 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		protected Void doInBackground(Context... ctxt) {
 			try {
+				descStopIdMap.clear();
 				for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
-					descStopIdMap.clear();
 					if (prefs.getBoolean(i.toString(), false)) {
 						int id = prefs.getInt("id_at_" + i.toString(), 0);
 						String page = loadPage(
@@ -260,7 +260,8 @@ public class ModelFragment extends SherlockFragment {
 					} catch (Exception e) {
 						showProblemToast();
 					}// parseMapMarkers() and parseMapRoute() are here because
-						// operations with the Map object must be in the main thread
+						// operations with the Map object must be in the main
+						// thread
 				}
 				if (!ids.isEmpty()) {
 					BusLocationReceiver.scheduleAlarm(getActivity()

@@ -23,20 +23,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Bus {
 	private String id;
-	private int speed;
-	private int type;
-	private int route;
-	private static Date time;
-	private static ArrayList<Bus> busList = new ArrayList<Bus>();
-	private static HashSet<String> activeBuses = new HashSet<String>();
-	private static final SparseArray<String> busTypes = new SparseArray<String>();
-	private BitmapDescriptor image = BitmapDescriptorFactory
-			.fromAsset("bus_arrow.png");
+	private int speed, type, route;
 	private GroundOverlayOptions groundOverlayOptions;
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
 	private Marker marker = null;
+	private static Date time;
+	private static ArrayList<Bus> busList = new ArrayList<Bus>();
+	private static HashSet<String> activeBuses = new HashSet<String>();
 	private static float dimensions = 196;
+	private static final SparseArray<String> busTypes = new SparseArray<String>();
+	private static final BitmapDescriptor image = BitmapDescriptorFactory
+			.fromAsset("bus_arrow.png");
 
 	static {
 		busTypes.put(59, "busType59.png");
@@ -81,8 +79,8 @@ public class Bus {
 
 	void setOverlay(GroundOverlay overlay) {
 		this.overlay = overlay;
-		activeBuses.add(id);
 		this.overlay.setDimensions(dimensions);
+		activeBuses.add(id);
 	}
 
 	void setMarker(Marker marker) {

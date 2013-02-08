@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -82,13 +81,10 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 	@Override
 	public void onDismiss(DialogInterface unused) {
 		super.onDismiss(unused);
-		Log.d(getClass().getSimpleName(), "Goodbye!");
 	}
 
 	@Override
 	public void onCancel(DialogInterface unused) {
 		super.onCancel(unused);
-		Toast.makeText(getActivity(), "cancel pressed", Toast.LENGTH_LONG)
-				.show();
 	}
 }

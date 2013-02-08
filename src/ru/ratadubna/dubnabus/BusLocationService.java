@@ -9,14 +9,15 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import com.google.android.gms.maps.model.LatLng;
 
 public class BusLocationService extends WakefulIntentService {
 	private static final String BUS_LOCATION_URL = "http://ratadubna.ru/nav/d.php?o=3&m=";
-	public static final String ACTION_BUS_LOCATION = "ru.ratadubna.dubnabus.action.BUS_LOCATION";
-	public static final String ACTION_BUS_LOADED = "ru.ratadubna.dubnabus.action.BUS_LOADED";
+	public static final String ACTION_BUS_LOCATION = "ru.ratadubna.dubnabus.action.BUS_LOCATION",
+			ACTION_BUS_LOADED = "ru.ratadubna.dubnabus.action.BUS_LOADED";
 
 	public BusLocationService() {
 		super("BusLocationService");
@@ -53,6 +54,8 @@ public class BusLocationService extends WakefulIntentService {
 		} catch (Exception e) {
 			Log.e(getClass().getSimpleName(),
 					"Exception retrieving update info", e);
+			Toast.makeText(DubnaBusActivity.getCtxt(), getString(R.string.problem),
+					Toast.LENGTH_LONG).show();
 		} finally {
 			if (reader != null) {
 				try {
@@ -65,7 +68,7 @@ public class BusLocationService extends WakefulIntentService {
 		}
 	}
 
-	private void parseBusLocs(String page, int id) {
+	private void parseBusLocs(String page, int id) throws Exception {
 		String[] strings = page.split("\n");
 		String time = "";
 		for (String str : strings) {
@@ -87,7 +90,7 @@ public class BusLocationService extends WakefulIntentService {
 							.parseInt(contents[0]), id));
 				}
 			} else
-				return;
+				throw new Exception("parseBusLocs problem");
 		}
 		int tmp = page.indexOf(":");
 		if (tmp > 0) {
@@ -98,7 +101,4 @@ public class BusLocationService extends WakefulIntentService {
 		}
 	}
 
-	void stop() {
-		stopSelf();
-	}
 }

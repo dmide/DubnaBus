@@ -17,7 +17,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class MenuFragment extends SherlockFragment implements
-		android.widget.AdapterView.OnItemClickListener{
+		android.widget.AdapterView.OnItemClickListener {
 	private ListView lv;
 	private SparseBooleanArray positionHide = new SparseBooleanArray();
 	private SharedPreferences prefs = null;
@@ -49,7 +49,7 @@ public class MenuFragment extends SherlockFragment implements
 		tv.setChecked(!tv.isChecked());
 	}
 
-	void saveSelection(){
+	void saveSelection() {
 		SharedPreferences.Editor editor = prefs.edit();
 		Integer i = 0;
 		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
@@ -60,7 +60,7 @@ public class MenuFragment extends SherlockFragment implements
 		editor.putInt(ModelFragment.ROUTES_ARRAY_SIZE, i);
 		editor.commit();
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -94,9 +94,7 @@ public class MenuFragment extends SherlockFragment implements
 						.findViewById(R.id.checkView);
 				if (itemView != null) {
 					itemView.setText(item.getDesc());
-					Boolean chk = positionHide.get(position);
-					if (chk != null)
-						itemView.setChecked(chk);
+					itemView.setChecked(positionHide.get(position));
 				}
 			}
 
