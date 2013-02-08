@@ -1,6 +1,8 @@
 package ru.ratadubna.dubnabus;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,10 +73,19 @@ abstract public class AbstractContentFragment extends WebViewFragment {
 		@Override
 		public void onPostExecute(Void arg0) {
 			String result = parseRoutes(page);
-			if (e == null)
-				getWebView().loadData(
-						"<style type=\"text/css\">td {white-space: nowrap;}</style>"
-								+ result, "text/html; charset=UTF-8", null);
+			if (e == null) {
+				String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+						+ "<style type=\"text/css\">td {white-space: nowrap;}</style>"
+						+ result;
+				try {
+					getWebView().loadData(
+							URLEncoder.encode(data, "UTF-8").replaceAll("\\+",
+									" "), "text/html; charset=UTF-8", null);
+				} catch (UnsupportedEncodingException e1) {
+					Log.e(getClass().getSimpleName(),
+							"Exception loading taxi phones content", e);
+				}
+			}
 		}
 	}
 

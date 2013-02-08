@@ -10,6 +10,7 @@ public class SimpleContentActivity extends SherlockFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTheme(R.style.Theme_Sherlock_Light);
 		if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
 			String file = getIntent().getStringExtra(EXTRA_DATA);
 			Fragment f = SimpleContentFragment.newInstance(file);
