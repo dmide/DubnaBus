@@ -46,7 +46,7 @@ public class BusLocationService extends WakefulIntentService {
 						buf.append(line + "\n");
 					}
 				} while (buf.toString().equals("\n") && (++i < 5));
-				parseBusLocs(buf.toString().replaceAll(",", "."), id);
+				parseBusLocations(buf.toString().replaceAll(",", "."), id);
 			}
 			intent = new Intent(ACTION_BUS_LOADED);
 			intent.setPackage(getPackageName());
@@ -54,8 +54,8 @@ public class BusLocationService extends WakefulIntentService {
 		} catch (Exception e) {
 			Log.e(getClass().getSimpleName(),
 					"Exception retrieving update info", e);
-			Toast.makeText(DubnaBusActivity.getCtxt(), getString(R.string.problem),
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(ModelFragment.getCtxt(),
+					getString(R.string.problem), Toast.LENGTH_LONG).show();
 		} finally {
 			if (reader != null) {
 				try {
@@ -68,9 +68,8 @@ public class BusLocationService extends WakefulIntentService {
 		}
 	}
 
-	private void parseBusLocs(String page, int id) throws Exception {
+	private void parseBusLocations(String page, int id) throws Exception {
 		String[] strings = page.split("\n");
-		String time = "";
 		for (String str : strings) {
 			String[] contents = str.split("\\s");
 			if (contents.length == 8) {
@@ -80,24 +79,17 @@ public class BusLocationService extends WakefulIntentService {
 							new LatLng(Double.parseDouble(contents[4]), Double
 									.parseDouble(contents[5])), Integer
 									.parseInt(contents[6]), Integer
-									.parseInt(contents[7]));
+									.parseInt(contents[7]), contents[3]);
 				} else {
 					Bus.addToList(new Bus(contents[1], new LatLng(Double
 							.parseDouble(contents[4]), Double
 							.parseDouble(contents[5])), Integer
 							.parseInt(contents[6]), Integer
 							.parseInt(contents[7]), Integer
-							.parseInt(contents[0]), id));
+							.parseInt(contents[0]), id, contents[3]));
 				}
 			} else
 				throw new Exception("parseBusLocs problem");
-		}
-		int tmp = page.indexOf(":");
-		if (tmp > 0) {
-			time = page.substring(tmp - 2, tmp + 3);
-		}
-		if (!time.isEmpty()) {
-			Bus.setTime(time);
 		}
 	}
 

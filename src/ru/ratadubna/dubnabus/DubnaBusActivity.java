@@ -33,8 +33,8 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban",
 			busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215",
 			busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus",
-			taxiurl = "parse:http://www.dubna.ru/143";
-	public static boolean reloadOverlays;
+			taxiurl = "http://www.dubna.ru/143";
+	public static boolean reloadOverlays = false;
 
 	static Context getCtxt() {
 		return context;
@@ -67,14 +67,13 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		super.onCreate(savedInstanceState);
 		context = getApplicationContext();
 		setTheme(R.style.Theme_Sherlock_Light);
-		if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
+		if ((model = (ModelFragment) getSupportFragmentManager()
+				.findFragmentByTag(MODEL)) == null) {
 			model = new ModelFragment();
 			getSupportFragmentManager().beginTransaction().add(model, MODEL)
 					.commit();
-		} else {
-			model = (ModelFragment) getSupportFragmentManager()
-					.findFragmentByTag(MODEL);
 		}
+		ModelFragment.setCtxt(this);
 		setContentView(R.layout.main);
 	}
 
@@ -92,9 +91,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			startActivity(i);
 			return (true);
 		case R.id.taxi:
-			i = new Intent(this, SimpleContentActivity.class);
-			i.putExtra(SimpleContentActivity.EXTRA_DATA, taxiurl);
-			startActivity(i);
+			model.loadTaxiPage(taxiurl);
 			return (true);
 		case R.id.trainsDM:
 			i = new Intent(this, SimpleContentActivity.class);
@@ -120,29 +117,25 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 		return (super.onOptionsItemSelected(item));
 	}
 
-	/*
-	 * @Override public boolean onKeyDown(int keycode, KeyEvent e) { switch
-	 * (keycode) { case KeyEvent.KEYCODE_MENU: Intent i = new Intent(this,
-	 * MenuActivity.class); startActivity(i); return (true); } return
-	 * super.onKeyDown(keycode, e); }
-	 */
-
 	private void setUpMapIfNeeded() {
 		if (mMap == null) {
-			reloadOverlays = true; // to redraw buses in case of activity reopen
-									// (buses instances are in memory, mMap is
-									// null)
 			SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map);
 			mapFrag.setRetainInstance(true);
 			mMap = mapFrag.getMap();
-			mMap.setInfoWindowAdapter(new ScheduleSnippetAdapter(
-					getLayoutInflater()));
-			mMap.setOnMarkerClickListener(this);
-			mMap.setOnCameraChangeListener(this);
-			mMap.setOnInfoWindowClickListener(this);
-			mMap.setMyLocationEnabled(true);
-			model.loadMapRoutes();
+			if (!model.isMapLoaded()) {
+				reloadOverlays = true; // to redraw buses in case of activity
+										// reopen
+				// (buses instances are in memory, mMap is
+				// null)
+				mMap.setInfoWindowAdapter(new SnippetAdapter(
+						getLayoutInflater()));
+				mMap.setOnMarkerClickListener(this);
+				mMap.setOnCameraChangeListener(this);
+				mMap.setOnInfoWindowClickListener(this);
+				mMap.setMyLocationEnabled(true);
+				model.loadMapRoutes();
+			}
 		} else if (reloadOverlays) {
 			mMap.clear();
 			model.loadMapRoutes();
@@ -162,22 +155,23 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	void setBusSnippet(Marker marker) {
 		Bus bus = Bus.getBusByMarker(marker);
 		marker.setSnippet("<img src=\"file:///android_res/drawable/"
-				+ bus.getPic() + "\">" + String.valueOf(bus.getSpeed())
-				+ getString(R.string.kmph));
+				+ bus.getPic() + "\">" + "<br />"
+				+ String.valueOf(bus.getSpeed()) + getString(R.string.kmph)
+				+ "<br />" + String.valueOf(bus.getTime()));
 		marker.showInfoWindow();
 	}
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
 		if (!marker.getTitle().matches("(№\\d{1,3})")
-				&& !model.lastBusSchedule.isEmpty()) {
-			if (getSupportFragmentManager().findFragmentByTag(DIALOG) == null) {
+				&& ((model.lastBusSchedule != null) && !model.lastBusSchedule
+						.isEmpty())) {
+			if ((dialog = (BusStopObserverDialogFragment) getSupportFragmentManager()
+					.findFragmentByTag(DIALOG)) == null) {
 				dialog = new BusStopObserverDialogFragment();
-				getSupportFragmentManager().beginTransaction()
+				((DubnaBusActivity) ModelFragment.getCtxt())
+						.getSupportFragmentManager().beginTransaction()
 						.add(dialog, DIALOG).commit();
-			} else {
-				dialog = (BusStopObserverDialogFragment) getSupportFragmentManager()
-						.findFragmentByTag(DIALOG);
 			}
 		}
 	}

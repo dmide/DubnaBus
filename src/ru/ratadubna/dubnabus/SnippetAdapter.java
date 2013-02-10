@@ -9,10 +9,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 
-class ScheduleSnippetAdapter implements InfoWindowAdapter {
+class SnippetAdapter implements InfoWindowAdapter {
 	LayoutInflater inflater = null;
 
-	ScheduleSnippetAdapter(LayoutInflater inflater) {
+	SnippetAdapter(LayoutInflater inflater) {
 		this.inflater = inflater;
 	}
 
@@ -48,7 +48,7 @@ class ScheduleSnippetAdapter implements InfoWindowAdapter {
 				return null;
 			}
 
-			Drawable d = DubnaBusActivity.getCtxt().getResources()
+			Drawable d = ModelFragment.getCtxt().getResources()
 					.getDrawable(id);
 			d.setBounds(0, 0, 70, 45);
 			return d;

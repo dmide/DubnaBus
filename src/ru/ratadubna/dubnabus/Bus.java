@@ -1,15 +1,10 @@
 package ru.ratadubna.dubnabus;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Locale;
 
 import android.graphics.Point;
 import android.location.Location;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.maps.Projection;
@@ -28,7 +23,7 @@ public class Bus {
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
 	private Marker marker = null;
-	private static Date time;
+	private String time = "";
 	private static ArrayList<Bus> busList = new ArrayList<Bus>();
 	private static HashSet<String> activeBuses = new HashSet<String>();
 	private static float dimensions = 196;
@@ -41,7 +36,9 @@ public class Bus {
 		busTypes.put(91, "busType91.png");
 	}
 
-	Bus(String id, LatLng position, int speed, int bearing, int type, int route) {
+	Bus(String id, LatLng position, int speed, int bearing, int type,
+			int route, String time) {
+		this.time = time;
 		this.id = id;
 		this.speed = speed;
 		this.type = type;
@@ -108,19 +105,7 @@ public class Bus {
 		return speed;
 	}
 
-	static void setTime(String sTime) {
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm",
-				Locale.getDefault());
-		try {
-			time = format.parse(sTime);
-		} catch (ParseException e) {
-			Log.e("Bus class", "Exception parsing time from string", e);
-		}
-	}
-
-	static Date getTime() {
-		if (time == null)
-			time = new Date();
+	String getTime() {
 		return time;
 	}
 
@@ -149,9 +134,11 @@ public class Bus {
 		return activeBuses.contains(id);
 	}
 
-	static void updateBus(String id, LatLng position, int speed, int bearing) {
+	static void updateBus(String id, LatLng position, int speed, int bearing,
+			String time) {
 		for (Bus bus : busList) {
 			if (bus.getId().equals(id)) {
+				bus.time = time;
 				bus.groundOverlayOptions.position(position, dimensions);
 				bus.speed = speed;
 				bus.groundOverlayOptions.bearing(bearing);

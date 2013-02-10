@@ -39,7 +39,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 									.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 			NotificationManager mgr = ((NotificationManager) ctxt
 					.getSystemService(Context.NOTIFICATION_SERVICE));
-			mgr.notify(NOTIFY_ID, builder.getNotification());
+			mgr.notify(NOTIFY_ID, builder.build());
 		}
 	}
 

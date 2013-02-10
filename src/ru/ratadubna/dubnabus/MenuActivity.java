@@ -13,18 +13,14 @@ public class MenuActivity extends SherlockFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTheme(R.style.Theme_Sherlock_Light);
-		if (getSupportFragmentManager().findFragmentByTag(MENU) == null) {
+		if ((menu = (MenuFragment) getSupportFragmentManager()
+				.findFragmentByTag(MENU)) == null) {
 			menu = new MenuFragment();
-			getSupportFragmentManager().beginTransaction()
-					.add(android.R.id.content, menu, MENU).commit();
-		} else {
-			menu = (MenuFragment) getSupportFragmentManager()
-					.findFragmentByTag(MENU);
-			getSupportFragmentManager().beginTransaction()
-					.add(android.R.id.content, menu, MENU).commit();
 		}
+		getSupportFragmentManager().beginTransaction()
+				.add(android.R.id.content, menu, MENU).commit();
 	}
-	
+
 	public void onChooseClick(View v) {
 		menu.saveSelection();
 		Bus.clearList();
@@ -32,7 +28,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 		DubnaBusActivity.reloadOverlays = true;
 		finish();
 	}
-	
+
 	public void onCancelClick(View v) {
 		finish();
 	}

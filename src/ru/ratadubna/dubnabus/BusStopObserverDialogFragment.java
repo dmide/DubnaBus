@@ -1,8 +1,5 @@
 package ru.ratadubna.dubnabus;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map.Entry;
 
 import android.app.AlertDialog;
@@ -12,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,6 +26,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 			prefs = PreferenceManager
 					.getDefaultSharedPreferences(getActivity());
 		}
+		setRetainInstance(true);
 		int delay = prefs.getInt("notificationDelay", 10);
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog, null);
 		et = (EditText) form.findViewById(R.id.value);
@@ -44,16 +43,13 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 				.getText().toString());
 		if (delay < 60) {
 			prefs.edit().putInt("notificationDelay", delay).apply();
-			Entry<Date, Integer> actualDelay = ((DubnaBusActivity) getActivity())
+			Entry<Integer, Integer> actualDelay = ((DubnaBusActivity) getActivity())
 					.getModel().observeBusStop(delay);
 			if (actualDelay != null) {
-				Calendar actualDelayCal = new GregorianCalendar();
-				actualDelayCal.setTime(actualDelay.getKey());
 				Toast.makeText(
 						getActivity(),
 						getString(R.string.min_before_alarm)
-								+ String.valueOf(actualDelayCal
-										.get(Calendar.MINUTE))
+								+ String.valueOf(actualDelay.getKey()/60000)
 								+ getString(R.string.awaiting_bus)
 								+ actualDelay.getValue().toString(),
 						Toast.LENGTH_LONG).show();
@@ -61,20 +57,18 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 				// "Минут до оповещения: 10. Ожидается автобус №42",
 				// Toast.LENGTH_LONG).show();
 				NotificationReceiver.scheduleAlarm(getActivity(),
-						actualDelayCal.get(Calendar.MINUTE) * 60000, delay,
+						actualDelay.getKey(), delay,
 						actualDelay.getValue().toString());
 				// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
 				// "42");
 			} else {
-				Toast.makeText(
-						getActivity(),
-						getString(R.string.no_bus),
+				Toast.makeText(getActivity(), getString(R.string.no_bus),
 						Toast.LENGTH_LONG).show();
 			}
 		} else {
 			Toast.makeText(getActivity(),
-					getString(R.string.waiting_time_limit),
-					Toast.LENGTH_LONG).show();
+					getString(R.string.waiting_time_limit), Toast.LENGTH_LONG)
+					.show();
 		}
 	}
 
@@ -86,5 +80,15 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 	@Override
 	public void onCancel(DialogInterface unused) {
 		super.onCancel(unused);
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+	}
+	
+	@Override
+	public int show(FragmentTransaction transaction, String tag) {
+	    return super.show(transaction, tag);
 	}
 }
