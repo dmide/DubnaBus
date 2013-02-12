@@ -1081,33 +1081,36 @@ containing a value of this type.
         public static final int abs__title=0x7f04001e;
         public static final int abs__titleDivider=0x7f04001f;
         public static final int abs__up=0x7f04000e;
-        public static final int busesDM=0x7f040042;
-        public static final int busesMD=0x7f040043;
-        public static final int but=0x7f040039;
-        public static final int cancel=0x7f04003a;
-        public static final int checkView=0x7f04003b;
+        public static final int adView=0x7f040038;
+        public static final int busesDM=0x7f040045;
+        public static final int busesMD=0x7f040046;
+        public static final int but=0x7f04003b;
+        public static final int cancel=0x7f04003c;
+        public static final int checkView=0x7f04003d;
         public static final int disableHome=0x7f04000c;
         public static final int edit_query=0x7f04002a;
         public static final int homeAsUp=0x7f040009;
         public static final int listMode=0x7f040005;
-        public static final int listView=0x7f040038;
-        public static final int map=0x7f040037;
+        public static final int listView=0x7f04003a;
+        public static final int main_layout=0x7f040037;
+        public static final int map=0x7f040039;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
-        public static final int route_selection=0x7f04003e;
+        public static final int route_selection=0x7f040041;
         public static final int satellite=0x7f040002;
         public static final int showCustom=0x7f04000b;
         public static final int showHome=0x7f040008;
         public static final int showTitle=0x7f04000a;
-        public static final int snippet=0x7f04003d;
+        public static final int snippet=0x7f04003f;
         public static final int tabMode=0x7f040006;
-        public static final int taxi=0x7f04003f;
+        public static final int taxi=0x7f040042;
         public static final int terrain=0x7f040003;
-        public static final int title=0x7f04003c;
-        public static final int trainsDM=0x7f040040;
-        public static final int trainsMD=0x7f040041;
+        public static final int title=0x7f04003e;
+        public static final int trainsDM=0x7f040043;
+        public static final int trainsMD=0x7f040044;
         public static final int useLogo=0x7f040007;
         public static final int value=0x7f040036;
+        public static final int webview=0x7f040040;
         public static final int wrap_content=0x7f040004;
     }
     public static final class integer {
@@ -1144,6 +1147,7 @@ containing a value of this type.
         public static final int schedulesnippet=0x7f03001b;
         public static final int sherlock_spinner_dropdown_item=0x7f03001c;
         public static final int sherlock_spinner_item=0x7f03001d;
+        public static final int simple=0x7f03001e;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;

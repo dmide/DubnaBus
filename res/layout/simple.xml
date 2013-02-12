@@ -16,14 +16,9 @@
         ads:loadAdOnCreate="true"
         ads:testDevices="TEST_EMULATOR" />
 
-    <fragment
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/map"
+    <LinearLayout
+        android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        map:cameraTargetLat="56.734178"
-        map:cameraTargetLng="37.150440"
-        map:cameraZoom="13" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

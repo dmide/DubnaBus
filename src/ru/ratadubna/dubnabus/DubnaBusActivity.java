@@ -133,7 +133,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 				mMap.setOnMarkerClickListener(this);
 				mMap.setOnCameraChangeListener(this);
 				mMap.setOnInfoWindowClickListener(this);
-				mMap.setMyLocationEnabled(true);
+				// mMap.setMyLocationEnabled(true); until Google doesn't fix the
+				// bug
+				// http://stackoverflow.com/questions/13756261/how-to-get-the-current-lcoation-in-google-maps-android-api-v2
 				model.loadMapRoutes();
 			}
 		} else if (reloadOverlays) {

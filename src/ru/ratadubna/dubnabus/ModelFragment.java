@@ -46,9 +46,10 @@ public class ModelFragment extends SherlockFragment {
 	String lastBusSchedule;
 	private Random random = new Random();
 	private static Context appContext = null;
-	private static Context mainActivity = null; // some kind of support package
-												// bug:
+	private static Context mainActivity = null;
 
+	// some kind of support package
+	// bug:
 	// http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult#comment20696631_10114942
 	// can't load DialogFragment after
 	// screen rotation, have to store
@@ -219,6 +220,7 @@ public class ModelFragment extends SherlockFragment {
 			reader = new BufferedReader(new InputStreamReader(
 					c.getInputStream()));
 			String line = reader.readLine();
+			Log.e("111", line);
 			if ((line != null) && (!line.isEmpty())
 					&& (line.contains(checkString))) {
 				do {
