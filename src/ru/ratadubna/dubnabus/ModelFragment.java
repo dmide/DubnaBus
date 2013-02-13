@@ -220,7 +220,6 @@ public class ModelFragment extends SherlockFragment {
 			reader = new BufferedReader(new InputStreamReader(
 					c.getInputStream()));
 			String line = reader.readLine();
-			Log.e("111", line);
 			if ((line != null) && (!line.isEmpty())
 					&& (line.contains(checkString))) {
 				do {

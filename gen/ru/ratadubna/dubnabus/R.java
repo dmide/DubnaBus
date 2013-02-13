@@ -1084,16 +1084,16 @@ containing a value of this type.
         public static final int adView=0x7f040038;
         public static final int busesDM=0x7f040045;
         public static final int busesMD=0x7f040046;
-        public static final int but=0x7f04003b;
-        public static final int cancel=0x7f04003c;
-        public static final int checkView=0x7f04003d;
+        public static final int but=0x7f04003a;
+        public static final int cancel=0x7f04003b;
+        public static final int checkView=0x7f04003c;
         public static final int disableHome=0x7f04000c;
         public static final int edit_query=0x7f04002a;
         public static final int homeAsUp=0x7f040009;
         public static final int listMode=0x7f040005;
-        public static final int listView=0x7f04003a;
-        public static final int main_layout=0x7f040037;
-        public static final int map=0x7f040039;
+        public static final int listView=0x7f040039;
+        public static final int main_layout=0x7f04003f;
+        public static final int map=0x7f040037;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
         public static final int route_selection=0x7f040041;
@@ -1101,11 +1101,11 @@ containing a value of this type.
         public static final int showCustom=0x7f04000b;
         public static final int showHome=0x7f040008;
         public static final int showTitle=0x7f04000a;
-        public static final int snippet=0x7f04003f;
+        public static final int snippet=0x7f04003e;
         public static final int tabMode=0x7f040006;
         public static final int taxi=0x7f040042;
         public static final int terrain=0x7f040003;
-        public static final int title=0x7f04003e;
+        public static final int title=0x7f04003d;
         public static final int trainsDM=0x7f040043;
         public static final int trainsMD=0x7f040044;
         public static final int useLogo=0x7f040007;
@@ -1198,6 +1198,7 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f050014;
+        public static final int adUnitId=0x7f05003a;
         public static final int app_name=0x7f05001a;
         public static final int arrives_in=0x7f05002f;
         public static final int awaiting_bus=0x7f05002a;
@@ -1250,6 +1251,7 @@ containing a value of this type.
          */
         public static final int common_google_play_services_update_title=0x7f050007;
         public static final int connection_problem=0x7f050036;
+        public static final int debug_map_key=0x7f050039;
         public static final int dlg_no=0x7f050027;
         public static final int dlg_note1=0x7f050024;
         public static final int dlg_note2=0x7f050025;
@@ -1264,6 +1266,7 @@ containing a value of this type.
         public static final int min_before_alarm=0x7f050029;
         public static final int no_bus=0x7f05002b;
         public static final int problem=0x7f050037;
+        public static final int release_map_key=0x7f050038;
         public static final int route_selection=0x7f05001b;
         public static final int submit_routes=0x7f05001e;
         public static final int taxi=0x7f050035;

@@ -31,5 +31,9 @@
     <string name="taxi">Такси</string>
     <string name="connection_problem">При загрузке страницы возникли проблемы</string>
     <string name="problem">При загрузке возникли проблемы, попробуйте повторить действие</string>
-
+    <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
+    <string name="debug_map_key">AIzaSyCX7cW--IXDiTodAaEdSrjlOhE2KgColXg</string>
+	<string name="adUnitId">a1511a9cde2162e</string>
+    
+    
 </resources>

@@ -28,17 +28,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private BusStopObserverDialogFragment dialog = null;
 	private BusLocationReceiver receiver = new BusLocationReceiver();
 	static final String MODEL = "model", DIALOG = "dialog";
-	private static Context context;
 	private final String trainsDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=suburban&fromId=c215",
 			trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban",
 			busesDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=bus&fromId=c215",
 			busesMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=bus",
 			taxiurl = "http://www.dubna.ru/143";
 	public static boolean reloadOverlays = false;
-
-	static Context getCtxt() {
-		return context;
-	}
 
 	@Override
 	public void onResume() {
@@ -65,7 +60,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		context = getApplicationContext();
 		setTheme(R.style.Theme_Sherlock_Light);
 		if ((model = (ModelFragment) getSupportFragmentManager()
 				.findFragmentByTag(MODEL)) == null) {
