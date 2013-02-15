@@ -436,7 +436,7 @@ public class ModelFragment extends SherlockFragment {
 				if (matcher.find()) {
 					if ((tmp = matcher.group()).length() == 3)
 						tmp += "&nbsp;&nbsp;";
-					result.append("<b>" + tmp + "</b> -");
+					result.append("<b>" + tmp + "</b> -&nbsp;");
 					if (matcher.find()) {
 						result.append("<font  color=\"green\">"
 								+ matcher.group() + "</font>");

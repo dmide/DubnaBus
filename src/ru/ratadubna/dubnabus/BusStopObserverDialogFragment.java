@@ -11,14 +11,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 public class BusStopObserverDialogFragment extends DialogFragment implements
 		DialogInterface.OnClickListener {
 	private SharedPreferences prefs = null;
 	private View form = null;
-	private EditText et = null;
+	private NumberPicker nb = null;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -29,8 +28,8 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 		setRetainInstance(true);
 		int delay = prefs.getInt("notificationDelay", 10);
 		form = getActivity().getLayoutInflater().inflate(R.layout.dialog, null);
-		et = (EditText) form.findViewById(R.id.value);
-		et.setText(String.valueOf(delay));
+		nb = (NumberPicker) form.findViewById(R.id.numberpicker);
+		nb.setCurrent(delay);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		return (builder.setTitle(R.string.dlg_title).setView(form)
 				.setPositiveButton(R.string.dlg_yes, this)
@@ -39,36 +38,29 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		int delay = Integer.parseInt(((EditText) form.findViewById(R.id.value))
-				.getText().toString());
-		if (delay < 60) {
-			prefs.edit().putInt("notificationDelay", delay).apply();
-			Entry<Integer, Integer> actualDelay = ((DubnaBusActivity) getActivity())
-					.getModel().observeBusStop(delay);
-			if (actualDelay != null) {
-				Toast.makeText(
-						getActivity(),
-						getString(R.string.min_before_alarm)
-								+ String.valueOf(actualDelay.getKey()/60000)
-								+ getString(R.string.awaiting_bus)
-								+ actualDelay.getValue().toString(),
-						Toast.LENGTH_LONG).show();
-				// Toast.makeText(getActivity(),
-				// "Минут до оповещения: 10. Ожидается автобус №42",
-				// Toast.LENGTH_LONG).show();
-				NotificationReceiver.scheduleAlarm(getActivity(),
-						actualDelay.getKey(), delay,
-						actualDelay.getValue().toString());
-				// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
-				// "42");
-			} else {
-				Toast.makeText(getActivity(), getString(R.string.no_bus),
-						Toast.LENGTH_LONG).show();
-			}
+		int delay = ((NumberPicker) form.findViewById(R.id.numberpicker))
+				.getCurrent();
+		prefs.edit().putInt("notificationDelay", delay).apply();
+		Entry<Integer, Integer> actualDelay = ((DubnaBusActivity) getActivity())
+				.getModel().observeBusStop(delay);
+		if (actualDelay != null) {
+			Toast.makeText(
+					getActivity(),
+					getString(R.string.min_before_alarm)
+							+ String.valueOf(actualDelay.getKey() / 60000)
+							+ getString(R.string.awaiting_bus)
+							+ actualDelay.getValue().toString(),
+					Toast.LENGTH_LONG).show();
+			// Toast.makeText(getActivity(),
+			// "Минут до оповещения: 10. Ожидается автобус №42",
+			// Toast.LENGTH_LONG).show();
+			NotificationReceiver.scheduleAlarm(getActivity(), actualDelay
+					.getKey(), delay, actualDelay.getValue().toString());
+			// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
+			// "42");
 		} else {
-			Toast.makeText(getActivity(),
-					getString(R.string.waiting_time_limit), Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(getActivity(), getString(R.string.no_bus),
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -81,14 +73,14 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 	public void onCancel(DialogInterface unused) {
 		super.onCancel(unused);
 	}
-	
+
 	@Override
-	public void onResume(){
+	public void onResume() {
 		super.onResume();
 	}
-	
+
 	@Override
 	public int show(FragmentTransaction transaction, String tag) {
-	    return super.show(transaction, tag);
+		return super.show(transaction, tag);
 	}
 }

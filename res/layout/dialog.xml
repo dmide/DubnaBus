@@ -6,43 +6,24 @@
     android:theme="@style/Theme.Sherlock.Light" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:gravity="center_vertical"
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight=".60"
+            android:gravity="center"
             android:text="@string/dlg_text1" />
 
-        <EditText
-            android:id="@+id/value"
-            android:layout_width="wrap_content"
+        <ru.ratadubna.dubnabus.NumberPicker
+            android:id="@+id/numberpicker"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="number" >
-
-            <requestFocus />
-        </EditText>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dlg_text2" />
-    </LinearLayout>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dlg_text3" />
+            android:layout_weight=".40"
+            android:gravity="center_horizontal" />
     </LinearLayout>
 
     <View
@@ -53,11 +34,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:text="@string/dlg_note1" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/dlg_note2" />
 
 </LinearLayout>
