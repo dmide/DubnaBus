@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,9 +43,11 @@ public class ModelFragment extends SherlockFragment {
 	private SharedPreferences prefs = null;
 	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
 	String lastBusSchedule;
-	private Random random = new Random();
 	private static Context appContext = null;
 	private static Context mainActivity = null;
+	private static final int[] COLORS = { 0x00FF0000, 0x000000FF, 0x00FF00FF,
+			0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
+			0x00880088, 0x00888888 };
 
 	// some kind of support package
 	// bug:
@@ -73,8 +74,11 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	private void showProblemToast() {
-		Toast.makeText(mainActivity, getString(R.string.problem),
-				Toast.LENGTH_LONG).show();
+		try {
+			Toast.makeText(mainActivity, getString(R.string.problem),
+					Toast.LENGTH_LONG).show();
+		} catch (Exception e) {
+		}
 	}
 
 	boolean isMapLoaded() {
@@ -288,9 +292,11 @@ public class ModelFragment extends SherlockFragment {
 		}
 	}
 
-	private Integer getColor() {
+	private Integer getColor(int i) {
+		if (i>9)
+			i-=10; //in case of new routes appearing
 		Integer color = 0x6F000000; // AARRGGBB
-		color += random.nextInt(0x00FFFFFF);
+		color += COLORS[i];
 		return color;
 	}
 
@@ -328,9 +334,10 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		public void onPostExecute(Void arg0) {
 			if (e == null) {
+				int i = 0;
 				for (PolylineOptions options : busRoutesOptionsArray) {
 					((DubnaBusActivity) getCtxt()).addRoute(options
-							.color(getColor()));
+							.color(getColor(i++)));
 				}
 				for (MarkerOptions options : busMarkerOptionsArray) {
 					((DubnaBusActivity) getCtxt()).addMarker(options);

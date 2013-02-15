@@ -1283,9 +1283,11 @@ containing a value of this type.
         public static final int dlg_yes=0x7f050024;
         public static final int kmph=0x7f050026;
         public static final int loading_routes=0x7f05001e;
+        public static final int mapProblems=0x7f050039;
         public static final int min=0x7f05002b;
         public static final int min_before_alarm=0x7f050027;
         public static final int no_bus=0x7f050029;
+        public static final int playProblems=0x7f050038;
         public static final int problem=0x7f050034;
         public static final int release_map_key=0x7f050035;
         public static final int route_refresh=0x7f05001c;

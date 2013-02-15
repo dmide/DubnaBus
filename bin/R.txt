@@ -433,9 +433,11 @@ int string dlg_title 0x7f050021
 int string dlg_yes 0x7f050024
 int string kmph 0x7f050026
 int string loading_routes 0x7f05001e
+int string mapProblems 0x7f050039
 int string min 0x7f05002b
 int string min_before_alarm 0x7f050027
 int string no_bus 0x7f050029
+int string playProblems 0x7f050038
 int string problem 0x7f050034
 int string release_map_key 0x7f050035
 int string route_refresh 0x7f05001c

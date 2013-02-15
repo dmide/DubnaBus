@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -123,6 +125,15 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 					.findFragmentById(R.id.map);
 			mapFrag.setRetainInstance(true);
 			mMap = mapFrag.getMap();
+			if (mMap == null) {
+				if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != 0)
+					Toast.makeText(this, getString(R.string.playProblems),
+							Toast.LENGTH_LONG).show();
+				else
+					Toast.makeText(this, getString(R.string.mapProblems),
+							Toast.LENGTH_LONG).show();
+			}
+
 			if (!model.isMapLoaded()) {
 				reloadOverlays = true; // to redraw buses in case of activity
 										// reopen

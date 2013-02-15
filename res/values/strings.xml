@@ -3,7 +3,7 @@
 
     <string name="app_name">DubnaBus</string>
     <string name="route_selection">Маршруты</string>
-        <string name="route_refresh">Обновить</string>
+    <string name="route_refresh">Обновить</string>
     <string name="title_activity_dubna_bus">DubnaBus</string>
     <string name="loading_routes">Пожалуйста, подождите, загружаю маршруты..</string>
     <string name="submit_routes">Выбрать</string>
@@ -31,5 +31,7 @@
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
     <string name="debug_map_key">AIzaSyCX7cW--IXDiTodAaEdSrjlOhE2KgColXg</string>
     <string name="adUnitId">a1511a9cde2162e</string>
+    <string name="playProblems">Неполадки с Google Play Services, установите обновление Google Play или прошивки</string>
+    <string name="mapProblems">Возникли проблемы, возможно, Вам нужно обновить прошивку</string>
 
 </resources>

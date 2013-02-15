@@ -19,7 +19,6 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 	private SharedPreferences prefs = null;
 	private View form = null;
 	private NumberPicker nb = null;
-	private String title;
 
 	public static BusStopObserverDialogFragment newInstance(String title){
 		BusStopObserverDialogFragment f = new BusStopObserverDialogFragment();
