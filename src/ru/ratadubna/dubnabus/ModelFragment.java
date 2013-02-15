@@ -90,9 +90,11 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	void processMarker(Marker marker) {
-		Integer id = descStopIdMap.get(marker.getTitle());
-		GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
-		executeAsyncTask(getScheduleTask, getAppCtxt());
+		if ((descStopIdMap != null) && (marker.getTitle() != null)) {
+			Integer id = descStopIdMap.get(marker.getTitle());
+			GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
+			executeAsyncTask(getScheduleTask, getAppCtxt());
+		}
 	}
 
 	private int getTimeDelay(int targetDelay, Integer route)
@@ -102,7 +104,7 @@ public class ModelFragment extends SherlockFragment {
 		Matcher matcher = pattern.matcher(lastBusSchedule), matcher2;
 		String scheduleTime;
 		boolean suitableTimeFound = false;
-		Calendar calendarSchedule = new GregorianCalendar(), calendarNow = new GregorianCalendar();
+		Calendar calendarNow = new GregorianCalendar();
 		if (matcher.find()) {
 			// resultTime variable is here because server returns arrival times
 			// in wrong order after 00:00
@@ -112,6 +114,7 @@ public class ModelFragment extends SherlockFragment {
 			matcher2 = pattern2.matcher(matcher.group());
 			calendarNow.setTime(new Date());
 			while (matcher2.find()) {
+				Calendar calendarSchedule = new GregorianCalendar();
 				scheduleTime = matcher2.group(1);
 				calendarSchedule.set(Calendar.HOUR_OF_DAY,
 						Integer.parseInt(scheduleTime.substring(0, 2)));
@@ -293,8 +296,8 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	private Integer getColor(int i) {
-		if (i>9)
-			i-=10; //in case of new routes appearing
+		if (i > 9)
+			i -= 10; // in case of new routes appearing
 		Integer color = 0x6F000000; // AARRGGBB
 		color += COLORS[i];
 		return color;
