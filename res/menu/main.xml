@@ -1,8 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/route_refresh"
+        android:icon="@drawable/ic_menu_refresh"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/route_refresh"/>
+    <item
         android:id="@+id/route_selection"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_menu_add"
         android:showAsAction="ifRoom|withText"
         android:title="@string/route_selection"/>
     <item

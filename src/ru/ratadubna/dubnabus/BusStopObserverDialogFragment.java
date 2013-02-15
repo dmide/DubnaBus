@@ -15,10 +15,20 @@ import android.widget.Toast;
 
 public class BusStopObserverDialogFragment extends DialogFragment implements
 		DialogInterface.OnClickListener {
+	private static final String KEY_TITLE = "title";
 	private SharedPreferences prefs = null;
 	private View form = null;
 	private NumberPicker nb = null;
+	private String title;
 
+	public static BusStopObserverDialogFragment newInstance(String title){
+		BusStopObserverDialogFragment f = new BusStopObserverDialogFragment();
+		Bundle args = new Bundle();
+		args.putString(KEY_TITLE, title);
+		f.setArguments(args);
+		return (f);
+	}
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		if (prefs == null) {
@@ -55,7 +65,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
 			// "Минут до оповещения: 10. Ожидается автобус №42",
 			// Toast.LENGTH_LONG).show();
 			NotificationReceiver.scheduleAlarm(getActivity(), actualDelay
-					.getKey(), delay, actualDelay.getValue().toString());
+					.getKey(), delay, actualDelay.getValue().toString(), getArguments().getString(KEY_TITLE));
 			// NotificationReceiver.scheduleAlarm(getActivity(), 10000, 10,
 			// "42");
 		} else {

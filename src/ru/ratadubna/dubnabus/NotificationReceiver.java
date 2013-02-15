@@ -29,7 +29,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 					.setContentText(
 							ctxt.getString(R.string.arrives_in)
 									+ String.valueOf(i.getIntExtra("delay", 0))
-									+ ctxt.getString(R.string.min))
+									+ ctxt.getString(R.string.min) + ", "
+									+ i.getStringExtra("stopTitle"))
 					.setSmallIcon(R.drawable.ic_stat_example)
 					.setTicker(ctxt.getString(R.string.bus_notification))
 					.setWhen(System.currentTimeMillis())
@@ -44,12 +45,13 @@ public class NotificationReceiver extends BroadcastReceiver {
 	}
 
 	static void scheduleAlarm(Context ctxt, int actual_delay, int delay,
-			String bus_number) {
+			String bus_number, String stopTitle) {
 		AlarmManager mgr = (AlarmManager) ctxt
 				.getSystemService(Context.ALARM_SERVICE);
 		Intent i = new Intent(ACTION_NOTIFICATION);
 		i.putExtra("delay", delay);
 		i.putExtra("bus_number", bus_number);
+		i.putExtra("stopTitle", stopTitle);
 		PendingIntent pi = PendingIntent.getBroadcast(ctxt, 31337, i,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		mgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()

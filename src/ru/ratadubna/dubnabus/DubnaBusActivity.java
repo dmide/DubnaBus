@@ -80,6 +80,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.route_refresh:
+			Bus.clearList();
+			BusLocationReceiver.loadingPermission = false;
+			DubnaBusActivity.reloadOverlays = true;
+			setUpMapIfNeeded();
+			return (true);
 		case R.id.route_selection:
 			Intent i = new Intent(this, MenuActivity.class);
 			startActivity(i);
@@ -164,7 +170,8 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 						.isEmpty())) {
 			if ((dialog = (BusStopObserverDialogFragment) getSupportFragmentManager()
 					.findFragmentByTag(DIALOG)) == null) {
-				dialog = new BusStopObserverDialogFragment();
+				dialog = BusStopObserverDialogFragment.newInstance(marker
+						.getTitle());
 				((DubnaBusActivity) ModelFragment.getCtxt())
 						.getSupportFragmentManager().beginTransaction()
 						.add(dialog, DIALOG).commit();
