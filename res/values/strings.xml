@@ -26,8 +26,8 @@
     <string name="busesDM">Автобусы Дубна-Москва</string>
     <string name="busesMD">Автобусы Москва-Дубна</string>
     <string name="taxi">Такси</string>
-    <string name="connection_problem">При загрузке страницы возникли проблемы</string>
-    <string name="problem">При загрузке возникли проблемы, попробуйте повторить действие</string>
+    <string name="connection_problem">Проблема при подключении к серверу ratadubna.ru. Возможно, он временно не работает.</string>
+    <string name="problem">Не удается получить данные, возможно, проблемы на сервисе ratadubna.ru. Попробуйте повторить действие.</string>
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
     <string name="debug_map_key">AIzaSyCX7cW--IXDiTodAaEdSrjlOhE2KgColXg</string>
     <string name="adUnitId">a1511a9cde2162e</string>

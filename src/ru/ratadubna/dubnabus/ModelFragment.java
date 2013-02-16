@@ -298,7 +298,7 @@ public class ModelFragment extends SherlockFragment {
 	private Integer getColor(int i) {
 		if (i > 9)
 			i -= 10; // in case of new routes appearing
-		Integer color = 0x6F000000; // AARRGGBB
+		Integer color = 0x6A000000; // AARRGGBB
 		color += COLORS[i];
 		return color;
 	}
@@ -424,7 +424,7 @@ public class ModelFragment extends SherlockFragment {
 			if (e == null) {
 				String strResult = result.toString();
 				if ((strResult == null) || (strResult.isEmpty())
-						|| (strResult.equals("<b>¹</b> -")))
+						|| (strResult.equals("<b>¹</b> -&nbsp;")))
 					lastBusSchedule = "";
 				else
 					lastBusSchedule = strResult;
