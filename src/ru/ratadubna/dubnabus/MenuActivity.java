@@ -16,9 +16,9 @@ public class MenuActivity extends SherlockFragmentActivity {
 		if ((menu = (MenuFragment) getSupportFragmentManager()
 				.findFragmentByTag(MENU)) == null) {
 			menu = new MenuFragment();
+			getSupportFragmentManager().beginTransaction()
+					.add(android.R.id.content, menu, MENU).commit();
 		}
-		getSupportFragmentManager().beginTransaction()
-				.add(android.R.id.content, menu, MENU).commit();
 	}
 
 	public void onChooseClick(View v) {
