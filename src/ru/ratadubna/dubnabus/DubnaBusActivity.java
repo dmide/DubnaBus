@@ -1,10 +1,6 @@
 package ru.ratadubna.dubnabus;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -28,7 +24,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	private GoogleMap mMap;
 	private ModelFragment model = null;
 	private BusStopObserverDialogFragment dialog = null;
-	private BusLocationReceiver receiver = new BusLocationReceiver();
 	static final String MODEL = "model", DIALOG = "dialog";
 	private final String trainsDMurl = "http://m.rasp.yandex.ru/search?toName=Москва&fromName=Дубна&search_type=suburban&fromId=c215",
 			trainsMDurl = "http://m.rasp.yandex.ru/search?toName=Дубна&toId=c215&fromName=Москва&search_type=suburban",
@@ -41,21 +36,12 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	public void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
-		IntentFilter f = new IntentFilter(
-				BusLocationService.ACTION_BUS_LOCATION);
-		f.addAction(BusLocationService.ACTION_BUS_LOADED);
-		f.setPriority(1000);
-		registerReceiver(receiver, f);
+		model.startLoadingBusLocations();
 	}
 
 	@Override
 	public void onPause() {
-		unregisterReceiver(receiver);
-		AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		Intent i = new Intent(BusLocationService.ACTION_BUS_LOCATION);
-		PendingIntent pi = PendingIntent.getBroadcast(this, 1337, i,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mgr.cancel(pi);
+		model.stopLoadingBusLocations();
 		super.onPause();
 	}
 
@@ -83,8 +69,8 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.route_refresh:
+			model.stopLoadingBusLocations();
 			Bus.clearList();
-			BusLocationReceiver.loadingPermission = false;
 			DubnaBusActivity.reloadOverlays = true;
 			setUpMapIfNeeded();
 			return (true);
@@ -216,6 +202,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 			}
 		}
 		reloadOverlays = false;
+		model.continueLoadingBusLocations();
 	}
 
 	@Override

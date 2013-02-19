@@ -12,7 +12,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +26,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -41,10 +46,18 @@ public class ModelFragment extends SherlockFragment {
 			SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
+	private Timer busLoadingTimer;
+	private volatile boolean busLoadingTimerStarted = false;
 	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
+	private CopyOnWriteArrayList<Integer> currentRoutesIds = new CopyOnWriteArrayList<Integer>();
 	String lastBusSchedule;
 	private static Context appContext = null;
 	private static Context mainActivity = null;
+	private static Handler busLocationUpdateHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			((DubnaBusActivity) getCtxt()).addBuses();
+		}
+	};
 	private static final int[] COLORS = { 0x00FF0000, 0x000000FF, 0x00FF00FF,
 			0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
 			0x00880088, 0x00888888 };
@@ -233,10 +246,10 @@ public class ModelFragment extends SherlockFragment {
 					parser.parse(line);
 				} while ((line = reader.readLine()) != null);
 			} else {
-				break;
+				continue;
 			}
 			loaded = true;
-		} while (!loaded && (++i < 5)); // check for empty page
+		} while (!loaded && (++i < 3)); // check for empty page
 		if (!loaded)
 			throw new Exception("Problem loading content");
 		if (reader != null) {
@@ -306,7 +319,6 @@ public class ModelFragment extends SherlockFragment {
 	private class GetBusRoutesAndMarkersTask extends
 			AsyncTask<Context, Void, Void> {
 		private Exception e = null;
-		ArrayList<Integer> ids = new ArrayList<Integer>();
 		PolylineOptions busRoutesOption;
 		ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
 		ArrayList<MarkerOptions> busMarkerOptionsArray = new ArrayList<MarkerOptions>();
@@ -315,6 +327,7 @@ public class ModelFragment extends SherlockFragment {
 		protected Void doInBackground(Context... ctxt) {
 			try {
 				descStopIdMap.clear();
+				currentRoutesIds.clear();
 				for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
 					if (prefs.getBoolean(i.toString(), false)) {
 						int id = prefs.getInt("id_at_" + i.toString(), 0);
@@ -323,7 +336,7 @@ public class ModelFragment extends SherlockFragment {
 								new URL(MAP_ROUTES_URL + String.valueOf(id)),
 								new BusRoutesAndMarkersLoader(), "56,");
 						busRoutesOptionsArray.add(busRoutesOption);
-						ids.add(id);
+						currentRoutesIds.add(id);
 					}
 				}
 			} catch (Exception e) {
@@ -345,10 +358,7 @@ public class ModelFragment extends SherlockFragment {
 				for (MarkerOptions options : busMarkerOptionsArray) {
 					((DubnaBusActivity) getCtxt()).addMarker(options);
 				}
-				if (!ids.isEmpty()) {
-					BusLocationReceiver.scheduleAlarm(getCtxt()
-							.getApplicationContext(), ids);
-				}
+				startLoadingBusLocations();
 			} else {
 				showProblemToast();
 			}
@@ -525,6 +535,73 @@ public class ModelFragment extends SherlockFragment {
 				showProblemToast();
 				return ModelFragment.getCtxt().getString(
 						R.string.connection_problem);
+			}
+		}
+	}
+
+	void startLoadingBusLocations() {
+		if (!currentRoutesIds.isEmpty() && !busLoadingTimerStarted) {
+			busLoadingTimer = new Timer();
+			busLoadingTimer.schedule(new GetBusLocationsTask(), 0);
+			busLoadingTimerStarted = true;
+		}
+	}
+
+	void continueLoadingBusLocations() {
+		if (busLoadingTimerStarted)
+			busLoadingTimer.schedule(new GetBusLocationsTask(), 5000);
+	}
+
+	void stopLoadingBusLocations() {
+		if (busLoadingTimer != null) {
+			busLoadingTimer.cancel();
+			busLoadingTimerStarted = false;
+		}
+	}
+
+	private class GetBusLocationsTask extends TimerTask {
+		private static final String BUS_LOCATION_URL = "http://ratadubna.ru/nav/d.php?o=3&m=";
+		private int routeId;
+
+		public void run() {
+			for (int id : currentRoutesIds) {
+				if (busLoadingTimerStarted) {
+					routeId = id;
+					try {
+						loadContent(
+								new URL(BUS_LOCATION_URL + String.valueOf(id)),
+								new BusLocationLoader(), "");
+					} catch (Exception e) {
+					}
+				}
+			}
+			busLocationUpdateHandler.obtainMessage(1).sendToTarget();
+		}
+
+		private class BusLocationLoader implements Parser {
+			@Override
+			public void parse(String line) throws Exception {
+				line = line.replaceAll(",", ".");
+				String[] contents = line.split("\\s");
+				int contentsLng = contents.length;
+				if ((contentsLng == 8) || (contentsLng == 9)) {
+					if (Bus.isActive(contents[1])) {
+						Bus.updateBus(contents[1],
+								new LatLng(Double.parseDouble(contents[4]),
+										Double.parseDouble(contents[5])),
+								Integer.parseInt(contents[6]), Integer
+										.parseInt(contents[7]), contents[3]);
+					} else {
+						Bus.addToList(new Bus(contents[1], new LatLng(Double
+								.parseDouble(contents[4]), Double
+								.parseDouble(contents[5])), Integer
+								.parseInt(contents[6]), Integer
+								.parseInt(contents[7]), Integer
+								.parseInt(contents[0]), routeId, contents[3]));
+					}
+				} else
+					throw new Exception("parseBusLocs problem");
+
 			}
 		}
 	}
