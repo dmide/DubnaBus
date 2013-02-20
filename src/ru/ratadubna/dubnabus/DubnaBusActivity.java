@@ -1,10 +1,13 @@
 package ru.ratadubna.dubnabus;
 
+
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -17,6 +20,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 
 public class DubnaBusActivity extends SherlockFragmentActivity implements
 		OnMarkerClickListener, OnCameraChangeListener,
@@ -60,7 +64,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
 		new MenuInflater(this).inflate(R.menu.main, menu);
 		return (super.onCreateOptionsMenu(menu));
 	}

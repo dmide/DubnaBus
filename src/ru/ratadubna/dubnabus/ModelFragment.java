@@ -47,7 +47,8 @@ public class ModelFragment extends SherlockFragment {
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
 	private Timer busLoadingTimer;
-	private volatile boolean busLoadingTimerStarted = false;
+	private volatile boolean busLoadingTimerMutex = false;
+	private volatile boolean busRoutesAndMarkersTaskMutex = false;
 	private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
 	private CopyOnWriteArrayList<Integer> currentRoutesIds = new CopyOnWriteArrayList<Integer>();
 	String lastBusSchedule;
@@ -99,7 +100,8 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	void loadMapRoutes() {
-		executeAsyncTask(new GetBusRoutesAndMarkersTask(), getAppCtxt());
+		if (!busRoutesAndMarkersTaskMutex)
+			executeAsyncTask(new GetBusRoutesAndMarkersTask(), getAppCtxt());
 	}
 
 	void processMarker(Marker marker) {
@@ -326,6 +328,7 @@ public class ModelFragment extends SherlockFragment {
 		@Override
 		protected Void doInBackground(Context... ctxt) {
 			try {
+				busRoutesAndMarkersTaskMutex = true;
 				descStopIdMap.clear();
 				currentRoutesIds.clear();
 				for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
@@ -362,6 +365,7 @@ public class ModelFragment extends SherlockFragment {
 			} else {
 				showProblemToast();
 			}
+			busRoutesAndMarkersTaskMutex = false;
 		}
 
 		private class BusRoutesAndMarkersLoader implements Parser {
@@ -540,22 +544,22 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	void startLoadingBusLocations() {
-		if (!currentRoutesIds.isEmpty() && !busLoadingTimerStarted) {
+		if (!currentRoutesIds.isEmpty() && !busLoadingTimerMutex) {
+			busLoadingTimerMutex = true;
 			busLoadingTimer = new Timer();
 			busLoadingTimer.schedule(new GetBusLocationsTask(), 0);
-			busLoadingTimerStarted = true;
 		}
 	}
 
 	void continueLoadingBusLocations() {
-		if (busLoadingTimerStarted)
+		if (busLoadingTimerMutex)
 			busLoadingTimer.schedule(new GetBusLocationsTask(), 5000);
 	}
 
 	void stopLoadingBusLocations() {
 		if (busLoadingTimer != null) {
 			busLoadingTimer.cancel();
-			busLoadingTimerStarted = false;
+			busLoadingTimerMutex = false;
 		}
 	}
 
@@ -565,7 +569,7 @@ public class ModelFragment extends SherlockFragment {
 
 		public void run() {
 			for (int id : currentRoutesIds) {
-				if (busLoadingTimerStarted) {
+				if (busLoadingTimerMutex) {
 					routeId = id;
 					try {
 						loadContent(
@@ -573,6 +577,8 @@ public class ModelFragment extends SherlockFragment {
 								new BusLocationLoader(), "");
 					} catch (Exception e) {
 					}
+				} else {
+					return;
 				}
 			}
 			busLocationUpdateHandler.obtainMessage(1).sendToTarget();
@@ -583,8 +589,7 @@ public class ModelFragment extends SherlockFragment {
 			public void parse(String line) throws Exception {
 				line = line.replaceAll(",", ".");
 				String[] contents = line.split("\\s");
-				int contentsLng = contents.length;
-				if ((contentsLng == 8) || (contentsLng == 9)) {
+				if (contents.length > 1) {
 					if (Bus.isActive(contents[1])) {
 						Bus.updateBus(contents[1],
 								new LatLng(Double.parseDouble(contents[4]),
