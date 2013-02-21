@@ -41,9 +41,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 public class ModelFragment extends SherlockFragment {
 	private ContentsLoadTask contentsTask = null;
-	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1",
-			MAP_ROUTES_URL = "http://ratadubna.ru/nav/d.php?o=2&m=",
-			SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=5&s=";
+	private static final String ROUTES_URL = "http://www.ratadubna.ru/nav/d.php?o=1001",
+			MAP_ROUTES_URL = "http://ratadubna.ru/nav/d.php?o=1002&m=",
+			SCHEDULE_URL = "http://ratadubna.ru/nav/d.php?o=1005&s=",
+			BUS_LOCATION_URL = "http://ratadubna.ru/nav/d.php?o=1003&m=";
 	static final String ROUTES_ARRAY_SIZE = "routes_array_size";
 	private SharedPreferences prefs = null;
 	private Timer busLoadingTimer;
@@ -271,7 +272,7 @@ public class ModelFragment extends SherlockFragment {
 		protected Void doInBackground(Context... ctxt) {
 			try {
 				loadContent(new URL(ROUTES_URL), new BusRoutesListLoader(),
-						"<li");
+						"№");
 			} catch (Exception e) {
 				this.e = e;
 				Log.e(getClass().getSimpleName(),
@@ -291,18 +292,9 @@ public class ModelFragment extends SherlockFragment {
 
 			@Override
 			public void parse(String line) throws Exception {
-				int id;
-				String text;
-				Pattern pattern = Pattern
-						.compile("route-menu-item([0-9]+).+title=\"Маршрут (.*)\" name"), pattern2 = Pattern
-						.compile("№(\\d+)");
-				Matcher matcher = pattern.matcher(line);
-				if (matcher.find()) {
-					id = Integer.parseInt(matcher.group(1));
-					text = matcher.group(2);
-					matcher = pattern2.matcher(text);
-					matcher.find();
-					BusRoutes.add(id, text, Integer.parseInt(matcher.group(1)));
+				String[] contents = line.split("\t");
+				if (contents.length > 1) {
+					BusRoutes.add(Integer.parseInt(contents[0]), "№"+contents[1]+" - "+contents[3], Integer.parseInt(contents[1]));
 				} else {
 					throw new Exception("Problem in parseBusRoutesList");
 				}
@@ -564,7 +556,6 @@ public class ModelFragment extends SherlockFragment {
 	}
 
 	private class GetBusLocationsTask extends TimerTask {
-		private static final String BUS_LOCATION_URL = "http://ratadubna.ru/nav/d.php?o=3&m=";
 		private int routeId;
 
 		public void run() {

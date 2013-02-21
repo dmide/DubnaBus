@@ -1,7 +1,5 @@
 package ru.ratadubna.dubnabus;
 
-
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -20,7 +18,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 
 public class DubnaBusActivity extends SherlockFragmentActivity implements
 		OnMarkerClickListener, OnCameraChangeListener,
@@ -122,22 +119,24 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 				else
 					Toast.makeText(this, getString(R.string.mapProblems),
 							Toast.LENGTH_LONG).show();
-			}
-
-			if (!model.isMapLoaded()) {
-				reloadOverlays = true; // to redraw buses in case of activity
-										// reopen
-				// (buses instances are in memory, mMap is
-				// null)
-				mMap.setInfoWindowAdapter(new SnippetAdapter(
-						getLayoutInflater()));
-				mMap.setOnMarkerClickListener(this);
-				mMap.setOnCameraChangeListener(this);
-				mMap.setOnInfoWindowClickListener(this);
-				// mMap.setMyLocationEnabled(true); until Google doesn't fix the
-				// bug
-				// http://stackoverflow.com/questions/13756261/how-to-get-the-current-lcoation-in-google-maps-android-api-v2
-				model.loadMapRoutes();
+			} else {
+				if (!model.isMapLoaded()) {
+					reloadOverlays = true; // to redraw buses in case of
+											// activity
+											// reopen
+					// (buses instances are in memory, mMap is
+					// null)
+					mMap.setInfoWindowAdapter(new SnippetAdapter(
+							getLayoutInflater()));
+					mMap.setOnMarkerClickListener(this);
+					mMap.setOnCameraChangeListener(this);
+					mMap.setOnInfoWindowClickListener(this);
+					// mMap.setMyLocationEnabled(true); until Google doesn't fix
+					// the
+					// bug
+					// http://stackoverflow.com/questions/13756261/how-to-get-the-current-lcoation-in-google-maps-android-api-v2
+					model.loadMapRoutes();
+				}
 			}
 		} else if (reloadOverlays) {
 			mMap.clear();
