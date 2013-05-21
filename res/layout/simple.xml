@@ -9,16 +9,7 @@
     <LinearLayout
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/adView" />
+        android:layout_height="fill_parent" />
 
-    <com.google.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        ads:adSize="SMART_BANNER"
-        ads:adUnitId="@string/adUnitId"
-        ads:loadAdOnCreate="true" />
 
 </RelativeLayout>
