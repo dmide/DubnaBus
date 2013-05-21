@@ -200,7 +200,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 				bus.setOverlay(mMap.addGroundOverlay(bus
 						.getGroundOverlayOptions()));
 				Marker marker = mMap.addMarker(bus.getMarkerOptions());
-				marker.setVisible(false);
+//				marker.setVisible(false);
 				bus.setMarker(marker);
 			}
 		}
