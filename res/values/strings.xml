@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">DubnaBus</string>
     <string name="route_selection">Маршруты</string>
     <string name="route_refresh">Обновить</string>
@@ -14,12 +13,12 @@
     <string name="dlg_yes">Да</string>
     <string name="dlg_no">Нет</string>
     <string name="kmph">км/ч</string>
-    <string name="min_before_alarm">Минут до оповещения:&#160;</string>
+    <string name="min_before_alarm">Минут до оповещения:\u0026#160;</string>
     <string name="awaiting_bus">. Ожидается автобус №</string>
     <string name="no_bus">К сожалению, на выбранных маршрутах нет автобусов, удовлетворяющих условиям</string>
     <string name="bus_number">Автобус №</string>
-    <string name="min">&#160;мин.</string>
-    <string name="arrives_in">Через&#160;</string>
+    <string name="min">\u0026#160;мин.</string>
+    <string name="arrives_in">Через\u0026#160;</string>
     <string name="bus_notification">Автобус</string>
     <string name="trainsDM">Поезда Дубна-Москва</string>
     <string name="trainsMD">Поезда Москва-Дубна</string>
@@ -29,9 +28,25 @@
     <string name="connection_problem">Проблема при подключении к серверу ratadubna.ru. Возможно, он временно не работает.</string>
     <string name="problem">Не удается получить данные, возможно, проблемы на сервисе ratadubna.ru. Попробуйте повторить действие.</string>
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
-    <string name="debug_map_key">AIzaSyCX7cW--IXDiTodAaEdSrjlOhE2KgColXg</string>
+    <!--map will only draw in dev with debug key-->
+    <!--this key is generated in Google dev console and based on debug keystore which is-->
+    <!--located in %user%/.android folder and unique to every user.-->
+    <!--Therefore, you should generate this key every time you start dev with new machine or user-->
+    <string name="debug_map_key">AIzaSyA6ucS_-IDMkpbINejrXaTsmixXrK3VQIc</string>
     <string name="adUnitId">a1511a9cde2162e</string>
     <string name="playProblems">Неполадки с Google Play Services, установите обновление Google Play или прошивки</string>
     <string name="mapProblems">Возникли проблемы, возможно, Вам нужно обновить прошивку</string>
+
+    <string name="trains_DM_url">http://m.rasp.yandex.ru/search?toName=Москва\u0026fromName=Дубна\u0026search_type=suburban\u0026fromId=c215</string>
+    <string name="trains_MD_url">http://m.rasp.yandex.ru/search?toName=Дубна\u0026toId=c215\u0026fromName=Москва\u0026search_type=suburban</string>
+    <string name="buses_DM_url">http://m.rasp.yandex.ru/search?toName=Москва\u0026fromName=Дубна\u0026search_type=bus\u0026fromId=c215</string>
+    <string name="buses_MD_url">http://m.rasp.yandex.ru/search?toName=Дубна\u0026toId=c215\u0026fromName=Москва\u0026search_type=bus</string>
+    <string name="taxi_url">http://www.dubna.ru/143</string>
+    <string name="routes_url">http://www.ratadubna.ru/nav/d.php?o=1001</string>
+    <string name="map_routes_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1002&m=]]></string>
+    <string name="schedule_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1005&s=]]></string>
+    <string name="bus_location_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1003&m=]]></string>
+    <string name="bus_type_59_remote_file">file:///android_res/drawable/busType59.png</string>
+    <string name="bus_type_91_remote_file">file:///android_res/drawable/busType91.png</string>
 
 </resources>
