@@ -59,6 +59,7 @@ public class ModelFragment extends SherlockFragment {
     private static final int[] COLORS = {0x00FF0000, 0x000000FF, 0x00FF00FF,
             0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
             0x00880088, 0x00888888};
+    private WebHelper helper;
 
     @TargetApi(11)
     static public <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
@@ -68,6 +69,16 @@ public class ModelFragment extends SherlockFragment {
         } else {
             task.execute(params);
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        }
+        setRetainInstance(true);
+        deliverModel();
     }
 
     boolean isMapLoaded() {
@@ -107,51 +118,12 @@ public class ModelFragment extends SherlockFragment {
         return delays.firstEntry();
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (prefs == null) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        }
-        setRetainInstance(true);
-        deliverModel();
-    }
-
     synchronized private void deliverModel() {
         if (BusRoutes.GetRoutes().isEmpty() && contentsTask == null) {
+            helper = new WebHelper();
             contentsTask = new ContentsLoadTask();
             executeAsyncTask(contentsTask, getActivity());
         }
-    }
-
-    String getPage(URL url) throws Exception {
-        StringBuilder buf;
-        BufferedReader reader;
-        int i = 0;
-        do {
-            HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestMethod("GET");
-            c.setReadTimeout(15000);
-            c.connect();
-            reader = new BufferedReader(new InputStreamReader(
-                    c.getInputStream()));
-            buf = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                buf.append(line + "\n");
-            }
-        } while (buf.toString().equals("\n") && (++i < 5)); // check for empty
-        // page
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                Log.e("ModelFragment loadPage",
-                        "Exception closing HUC reader", e);
-            }
-        }
-
-        return buf.toString();
     }
 
     void loadTaxiPage(String url) {
@@ -168,50 +140,16 @@ public class ModelFragment extends SherlockFragment {
     }
 
     void continueLoadingBusLocations() {
-        if (busLoadingTimerMutex)
+        if (busLoadingTimerMutex) {
             busLoadingTimer.schedule(new GetBusLocationsTask(), 5000);
+        }
     }
 
     void stopLoadingBusLocations() {
         if (busLoadingTimer != null) {
             busLoadingTimer.cancel();
-            busLoadingTimerMutex = false;
         }
-    }
-
-    private void loadContent(URL url, Parser parser, String checkString)
-            throws Exception {
-        int i = 0;
-        BufferedReader reader = null;
-        boolean loaded = false;
-        do {
-            HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestMethod("GET");
-            c.setReadTimeout(15000);
-            c.connect();
-            reader = new BufferedReader(new InputStreamReader(
-                    c.getInputStream()));
-            String line = reader.readLine();
-            if ((line != null) && (!line.isEmpty())
-                    && (line.contains(checkString))) {
-                do {
-                    parser.parse(line);
-                } while ((line = reader.readLine()) != null);
-            } else {
-                continue;
-            }
-            loaded = true;
-        } while (!loaded && (++i < 3)); // check for empty page
-        if (!loaded)
-            throw new Exception("Problem loading content");
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                Log.e("ModelFragment loadContent",
-                        "Exception closing HUC reader", e);
-            }
-        }
+        busLoadingTimerMutex = false;
     }
 
     private Integer getColor(int i) {
@@ -277,7 +215,7 @@ public class ModelFragment extends SherlockFragment {
         @Override
         protected Void doInBackground(Context... ctxt) {
             try {
-                loadContent(new URL(getString(R.string.routes_url)),
+                helper.loadContent(new URL(getString(R.string.routes_url)),
                         new BusRoutesListLoader(), "¹");
             } catch (Exception e) {
                 this.e = e;
@@ -294,7 +232,7 @@ public class ModelFragment extends SherlockFragment {
             }
         }
 
-        private class BusRoutesListLoader implements Parser {
+        private class BusRoutesListLoader implements WebHelper.Parser {
             @Override
             public void parse(String line) throws Exception {
                 String[] contents = line.split("\t");
@@ -318,7 +256,7 @@ public class ModelFragment extends SherlockFragment {
         @Override
         protected Void doInBackground(Context... ctxt) {
             try {
-                page = getPage(new URL(page));
+                page = helper.getPage(new URL(page));
                 if (page.equals("\n"))
                     throw new Exception("Connection problem");
             } catch (Exception e) {
@@ -379,7 +317,7 @@ public class ModelFragment extends SherlockFragment {
                 if (busLoadingTimerMutex) {
                     routeId = id;
                     try {
-                        loadContent(
+                        helper.loadContent(
                                 new URL(getString(R.string.bus_location_url) + String.valueOf(id)),
                                 new BusLocationLoader(), "");
                     } catch (Exception e) {
@@ -391,7 +329,7 @@ public class ModelFragment extends SherlockFragment {
             busLocationUpdateHandler.obtainMessage(1).sendToTarget();
         }
 
-        private class BusLocationLoader implements Parser {
+        private class BusLocationLoader implements WebHelper.Parser {
             @Override
             public void parse(String line) throws Exception {
                 line = line.replaceAll(",", ".");
@@ -432,7 +370,7 @@ public class ModelFragment extends SherlockFragment {
         @Override
         protected Void doInBackground(Context... ctxt) {
             try {
-                loadContent(new URL(getString(R.string.schedule_url) + String.valueOf(id)),
+                helper.loadContent(new URL(getString(R.string.schedule_url) + String.valueOf(id)),
                         new ScheduleLoader(), "<");
             } catch (Exception e) {
                 this.e = e;
@@ -458,7 +396,7 @@ public class ModelFragment extends SherlockFragment {
             }
         }
 
-        private class ScheduleLoader implements Parser {
+        private class ScheduleLoader implements WebHelper.Parser {
 
             @Override
             public void parse(String line) throws Exception {
@@ -501,7 +439,7 @@ public class ModelFragment extends SherlockFragment {
                     if (prefs.getBoolean(i.toString(), false)) {
                         int id = prefs.getInt("id_at_" + i.toString(), 0);
                         busRoutesOption = new PolylineOptions();
-                        loadContent(
+                        helper.loadContent(
                                 new URL(getString(R.string.map_routes_url) + String.valueOf(id)),
                                 new BusRoutesAndMarkersLoader(), "56,");
                         busRoutesOptionsArray.add(busRoutesOption);
@@ -534,7 +472,7 @@ public class ModelFragment extends SherlockFragment {
             busRoutesAndMarkersTaskMutex = false;
         }
 
-        private class BusRoutesAndMarkersLoader implements Parser {
+        private class BusRoutesAndMarkersLoader implements WebHelper.Parser {
 
             @Override
             public void parse(String line) throws Exception {
@@ -573,9 +511,5 @@ public class ModelFragment extends SherlockFragment {
                 }
             }
         }
-    }
-
-    private interface Parser {
-        void parse(String line) throws Exception;
     }
 }
