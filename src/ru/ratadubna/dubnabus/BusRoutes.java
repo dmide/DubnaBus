@@ -11,14 +11,6 @@ public class BusRoutes {
 		return routes;
 	}
 
-	public static int realIdByServiceId(int sId) {
-		for (BusRoutes route : routes) {
-			if (route.routeServiceId == sId)
-				return route.routeRealId;
-		}
-		return 0;
-	}
-
 	public static void add(int routeServiceId, String desc, int routeRealId) {
 		BusRoutes route = new BusRoutes();
 		route.routeServiceId = routeServiceId;

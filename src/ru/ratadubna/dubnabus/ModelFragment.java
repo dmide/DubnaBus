@@ -2,15 +2,8 @@ package ru.ratadubna.dubnabus;
 
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.json.parsers.JSONParser;
 import ru.ratadubna.dubnabus.tasks.ContentsLoadTask;
 import ru.ratadubna.dubnabus.tasks.GetScheduleTask;
 import ru.ratadubna.dubnabus.tasks.GetTaxiPhonesTask;
@@ -47,7 +41,6 @@ public class ModelFragment extends SherlockFragment {
     private volatile boolean busLoadingTimerMutex = false;
     private volatile boolean busRoutesAndMarkersTaskMutex = false;
     private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
-    private CopyOnWriteArrayList<Integer> currentRoutesIds = new CopyOnWriteArrayList<Integer>();
     private final Handler busLocationUpdateHandler = new Handler() {
         public void handleMessage(Message msg) {
             ((DubnaBusActivity) getActivity()).addBuses();
@@ -137,7 +130,7 @@ public class ModelFragment extends SherlockFragment {
     }
 
     void startLoadingBusLocations() {
-        if (!currentRoutesIds.isEmpty() && !busLoadingTimerMutex) {
+        if (!busLoadingTimerMutex) {
             busLoadingTimerMutex = true;
             busLoadingTimer = new Timer();
             busLoadingTimer.schedule(new GetBusLocationsTask(), 0);
@@ -209,23 +202,19 @@ public class ModelFragment extends SherlockFragment {
     }
 
     private class GetBusLocationsTask extends TimerTask {
-        private int routeId;
 
         public void run() {
-            for (int id : currentRoutesIds) {
-                if (busLoadingTimerMutex) {
-                    routeId = id;
-                    try {
-                        WebHelper.loadContent(
-                                new URL(getString(R.string.bus_location_url) + String.valueOf(id)),
-                                new BusLocationLoader(), "");
-                    } catch (Exception e) {
-                        Log.e(getClass().getSimpleName(),
-                                "Exception retrieving bus location", e);
-                    }
-                } else {
-                    return;
+            if (busLoadingTimerMutex) {
+                try {
+                    WebHelper.loadContent(
+                            new URL(getString(R.string.bus_location_url)),
+                            new BusLocationLoader(), "");
+                } catch (Exception e) {
+                    Log.e(getClass().getSimpleName(),
+                            "Exception retrieving bus location", e);
                 }
+            } else {
+                return;
             }
             busLocationUpdateHandler.obtainMessage(1).sendToTarget();
         }
@@ -233,27 +222,29 @@ public class ModelFragment extends SherlockFragment {
         private class BusLocationLoader implements WebHelper.Parser {
             @Override
             public void parse(String line) throws Exception {
-                line = line.replaceAll(",", ".");
-                String[] contents = line.split("\\s");
-                if (contents.length > 1) {
-                    if (Bus.isActive(contents[1])) {
-                        Bus.updateBus(contents[1],
-                                new LatLng(Double.parseDouble(contents[4]),
-                                        Double.parseDouble(contents[5])),
-                                Integer.parseInt(contents[6]), Integer
-                                .parseInt(contents[7]), contents[3]);
-                    } else {
-                        Bus.addToList(new Bus(contents[1], new LatLng(Double
-                                .parseDouble(contents[4]), Double
-                                .parseDouble(contents[5])), Integer
-                                .parseInt(contents[6]), Integer
-                                .parseInt(contents[7]), Integer
-                                .parseInt(contents[0]), routeId, contents[3]));
-                    }
-                } else {
-                    throw new Exception("parseBusLocs problem");
-                }
+                JSONParser parser = new JSONParser();
+                Map jsonData = parser.parseJson(line);
+                ArrayList<HashMap> busesList = (ArrayList<HashMap>) jsonData.get("root");
+                String id, time;
+                int bearing, routeNum, routeId, type;
+                LatLng latLng;
+                for (HashMap bus : busesList) {
+                    id = (String) bus.get("id");
+                    time = (String) bus.get("dt");
+                    bearing = Integer.valueOf((String) bus.get("dg"));
+                    ArrayList jLatLng = (ArrayList) bus.get("lc");
+                    latLng = new LatLng(Double.valueOf((String) jLatLng.get(0)),
+                            Double.valueOf((String) jLatLng.get(1)));
+                    routeNum = Integer.valueOf((String) bus.get("rn"));
+                    routeId = Integer.valueOf((String) bus.get("rid"));
+                    type = Integer.valueOf((String) bus.get("md"));
 
+                    if (Bus.isActive(id)) {
+                        Bus.updateBus(id, latLng, 0, bearing, time);
+                    } else {
+                        Bus.addToList(new Bus(id, latLng, 0, bearing, type, routeId, time, routeNum));
+                    }
+                }
             }
         }
     }
@@ -270,7 +261,6 @@ public class ModelFragment extends SherlockFragment {
             try {
                 busRoutesAndMarkersTaskMutex = true;
                 descStopIdMap.clear();
-                currentRoutesIds.clear();
                 for (Integer i = 0; i < prefs.getInt(ROUTES_ARRAY_SIZE, 0); i++) {
                     if (prefs.getBoolean(i.toString(), false)) {
                         int id = prefs.getInt("id_at_" + i.toString(), 0);
@@ -279,7 +269,6 @@ public class ModelFragment extends SherlockFragment {
                                 new URL(getString(R.string.map_routes_url) + String.valueOf(id)),
                                 new BusRoutesAndMarkersLoader(), "56,");
                         busRoutesOptionsArray.add(busRoutesOption);
-                        currentRoutesIds.add(id);
                     }
                 }
             } catch (Exception e) {

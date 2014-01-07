@@ -46,7 +46,7 @@
     <string name="routes_url">http://www.ratadubna.ru/nav/d.php?o=1001</string>
     <string name="map_routes_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1002&m=]]></string>
     <string name="schedule_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1005&s=]]></string>
-    <string name="bus_location_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1003&m=]]></string>
+    <string name="bus_location_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=1004]]></string>
     <string name="bus_type_59_remote_file">file:///android_res/drawable/busType59.png</string>
     <string name="bus_type_91_remote_file">file:///android_res/drawable/busType91.png</string>
 

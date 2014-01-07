@@ -139,7 +139,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
         Bus bus = Bus.getBusByMarker(marker);
         marker.setSnippet("<img src=\"file:///android_res/drawable/"
                 + bus.getPic() + "\">" + "<br />"
-                + String.valueOf(bus.getSpeed()) + getString(R.string.kmph)
+//                + String.valueOf(bus.getSpeed()) + getString(R.string.kmph) //currently unsupported
                 + "<br />" + String.valueOf(bus.getTime()));
         marker.showInfoWindow();
     }

@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Bus {
 	private String id;
-	private int speed, type, route;
+	private int speed, type, route, routeNum;
 	private GroundOverlayOptions groundOverlayOptions;
 	private GroundOverlay overlay = null;
 	private MarkerOptions markerOptions;
@@ -37,7 +37,8 @@ public class Bus {
 	}
 
 	Bus(String id, LatLng position, int speed, int bearing, int type,
-			int route, String time) {
+			int route, String time, int routeNum) {
+        this.routeNum = routeNum;
 		this.time = time;
 		this.id = id;
 		this.speed = speed;
@@ -45,7 +46,7 @@ public class Bus {
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
 				.position(position, dimensions).bearing(bearing).zIndex(1);
-		String title = "¹" + String.valueOf(BusRoutes.realIdByServiceId(route));
+		String title = "¹" + routeNum;
 		markerOptions = new MarkerOptions().position(position).title(title)
 				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
 	}
