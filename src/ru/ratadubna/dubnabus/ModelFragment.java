@@ -1,9 +1,5 @@
 package ru.ratadubna.dubnabus;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -20,8 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -38,12 +32,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import ru.ratadubna.dubnabus.tasks.ContentsLoadTask;
+import ru.ratadubna.dubnabus.tasks.GetScheduleTask;
+import ru.ratadubna.dubnabus.tasks.GetTaxiPhonesTask;
 
 public class ModelFragment extends SherlockFragment {
 
     public static final String ROUTES_ARRAY_SIZE = "routes_array_size";
+    public String lastBusSchedule;
 
-    String lastBusSchedule;
     private ContentsLoadTask contentsTask = null;
     private SharedPreferences prefs = null;
     private Timer busLoadingTimer;
@@ -59,7 +56,6 @@ public class ModelFragment extends SherlockFragment {
     private static final int[] COLORS = {0x00FF0000, 0x000000FF, 0x00FF00FF,
             0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
             0x00880088, 0x00888888};
-    private WebHelper helper;
 
     @TargetApi(11)
     static public <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
@@ -81,21 +77,29 @@ public class ModelFragment extends SherlockFragment {
         deliverModel();
     }
 
+    public void showProblemToast() {
+        try {
+            Toast.makeText(getActivity(), getString(R.string.problem),
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+        }
+    }
+
     boolean isMapLoaded() {
         return (!descStopIdMap.isEmpty());
     }
 
     void loadMapRoutes() {
         if (!busRoutesAndMarkersTaskMutex) {
-            executeAsyncTask(new GetBusRoutesAndMarkersTask(), getActivity());
+            executeAsyncTask(new GetBusRoutesAndMarkersTask());
         }
     }
 
     void processMarker(Marker marker) {
         if ((descStopIdMap != null) && (marker.getTitle() != null)) {
             Integer id = descStopIdMap.get(marker.getTitle());
-            GetScheduleTask getScheduleTask = new GetScheduleTask(id, marker);
-            executeAsyncTask(getScheduleTask, getActivity());
+            GetScheduleTask getScheduleTask = new GetScheduleTask(this, id, marker);
+            executeAsyncTask(getScheduleTask);
         }
     }
 
@@ -107,8 +111,10 @@ public class ModelFragment extends SherlockFragment {
             if (prefs.getBoolean(i.toString(), false)) {
                 try {
                     routeRealId = BusRoutes.GetRoutes().get(i).getRouteRealId();
-                    if ((timeDelay = getTimeDelay(targetDelay, routeRealId)) != 0)
+                    timeDelay = getRealArrivalDelay(targetDelay, routeRealId);
+                    if (timeDelay != 0) {
                         delays.put(timeDelay, routeRealId);
+                    }
                 } catch (ParseException e) {
                     Log.e(getClass().getSimpleName(),
                             "Exception parsing time from string", e);
@@ -120,15 +126,14 @@ public class ModelFragment extends SherlockFragment {
 
     synchronized private void deliverModel() {
         if (BusRoutes.GetRoutes().isEmpty() && contentsTask == null) {
-            helper = new WebHelper();
-            contentsTask = new ContentsLoadTask();
-            executeAsyncTask(contentsTask, getActivity());
+            contentsTask = new ContentsLoadTask(this);
+            executeAsyncTask(contentsTask);
         }
     }
 
     void loadTaxiPage(String url) {
-        GetTaxiPhonesTask taxiTask = new GetTaxiPhonesTask(url);
-        ModelFragment.executeAsyncTask(taxiTask, getActivity());
+        GetTaxiPhonesTask taxiTask = new GetTaxiPhonesTask(this, url);
+        ModelFragment.executeAsyncTask(taxiTask);
     }
 
     void startLoadingBusLocations() {
@@ -160,33 +165,25 @@ public class ModelFragment extends SherlockFragment {
         return color;
     }
 
-    private void showProblemToast() {
-        try {
-            Toast.makeText(getActivity(), getString(R.string.problem),
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-        }
-    }
-
-    private int getTimeDelay(int targetDelay, Integer route)
+    private int getRealArrivalDelay(int targetDelay, int route)
             throws ParseException {
-        Pattern pattern = Pattern.compile("¹" + route.toString()
-                + "[<&](.+?)<br"), pattern2;
-        Matcher matcher = pattern.matcher(lastBusSchedule), matcher2;
-        String scheduleTime;
         boolean suitableTimeFound = false;
-        Calendar calendarNow = new GregorianCalendar();
+        Pattern pattern = Pattern.compile("¹" + route + "[<&](.+?)<br");
+        Matcher matcher = pattern.matcher(lastBusSchedule);
         if (matcher.find()) {
             // resultTime variable is here because server returns arrival times
             // in wrong order after 00:00
-            Date resultTime = new Date(new Date().getTime() + 300 * 60 * 1000), targetTime = new Date(
-                    new Date().getTime() + targetDelay * 60000);
-            pattern2 = Pattern.compile("(\\d+:\\d+)");
-            matcher2 = pattern2.matcher(matcher.group());
+            String scheduleTime;
+            Date resultTime = new Date(new Date().getTime() + 300 * 60 * 1000);
+            Date targetTime = new Date(new Date().getTime() + targetDelay * 60000);
+            Pattern pattern2 = Pattern.compile("(\\d+:\\d+)");
+            Matcher matcher2 = pattern2.matcher(matcher.group());
+            Calendar calendarNow = new GregorianCalendar();
+            Calendar calendarSchedule = new GregorianCalendar();
             calendarNow.setTime(new Date());
             while (matcher2.find()) {
-                Calendar calendarSchedule = new GregorianCalendar();
                 scheduleTime = matcher2.group(1);
+                calendarSchedule.clear();
                 calendarSchedule.set(Calendar.HOUR_OF_DAY,
                         Integer.parseInt(scheduleTime.substring(0, 2)));
                 calendarSchedule.set(Calendar.MINUTE,
@@ -195,118 +192,20 @@ public class ModelFragment extends SherlockFragment {
                 // outdated data. (data is usually outdated for a couple of
                 // minutes)
                 if ((calendarNow.getTimeInMillis() - calendarSchedule
-                        .getTimeInMillis()) > 120 * 60000)
+                        .getTimeInMillis()) > 120 * 60000) {
                     calendarSchedule.add(Calendar.DATE, 1);
+                }
                 if (targetTime.before(calendarSchedule.getTime())
                         && resultTime.after(calendarSchedule.getTime())) {
                     resultTime = calendarSchedule.getTime();
                     suitableTimeFound = true;
                 }
             }
-            if (suitableTimeFound)
+            if (suitableTimeFound) {
                 return (int) (resultTime.getTime() - targetTime.getTime());
+            }
         }
         return 0;
-    }
-
-    private class ContentsLoadTask extends AsyncTask<Context, Void, Void> {
-        private Exception e;
-
-        @Override
-        protected Void doInBackground(Context... ctxt) {
-            try {
-                helper.loadContent(new URL(getString(R.string.routes_url)),
-                        new BusRoutesListLoader(), "¹");
-            } catch (Exception e) {
-                this.e = e;
-                Log.e(getClass().getSimpleName(),
-                        "Exception retrieving bus routes content", e);
-            }
-            return (null);
-        }
-
-        @Override
-        public void onPostExecute(Void arg0) {
-            if (e != null) {
-                showProblemToast();
-            }
-        }
-
-        private class BusRoutesListLoader implements WebHelper.Parser {
-            @Override
-            public void parse(String line) throws Exception {
-                String[] contents = line.split("\t");
-                if (contents.length > 1) {
-                    BusRoutes.add(Integer.parseInt(contents[0]), "¹" + contents[1] + " - " + contents[3], Integer.parseInt(contents[1]));
-                } else {
-                    throw new Exception("Problem in parseBusRoutesList");
-                }
-            }
-        }
-    }
-
-    private class GetTaxiPhonesTask extends AsyncTask<Context, Void, Void> {
-        private Exception e = null;
-        String page = "";
-
-        GetTaxiPhonesTask(String page) {
-            this.page = page;
-        }
-
-        @Override
-        protected Void doInBackground(Context... ctxt) {
-            try {
-                page = helper.getPage(new URL(page));
-                if (page.equals("\n"))
-                    throw new Exception("Connection problem");
-            } catch (Exception e) {
-                this.e = e;
-                Log.e(getClass().getSimpleName(),
-                        "Exception retrieving taxi phones content", e);
-            }
-            return (null);
-        }
-
-        @Override
-        public void onPostExecute(Void arg0) {
-            String result = parsePhoneNumbersPage(page);
-            if (e == null) {
-                String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-                        + "<style type=\"text/css\">td {white-space: nowrap;}</style>"
-                        + result;
-                Intent i = new Intent(getActivity(), SimpleContentActivity.class);
-                i.putExtra(SimpleContentActivity.EXTRA_DATA, data);
-                startActivity(i);
-            }
-        }
-
-        private String parsePhoneNumbersPage(String page) {
-            Pattern pattern = Pattern
-                    .compile("<table border=0 width=\"100%\">([\\s\\S]+?)</table>"), pattern2 = Pattern
-                    .compile("(8[\\d\\(\\)\\s-]{14,15})");
-            Matcher matcher = pattern.matcher(page);
-            if (matcher.find()) {
-                String phone, result = matcher
-                        .group()
-                        .replaceAll("(21[\\d-]{7}<br[\\s>/]+)", "")
-                        .replaceAll("(\\(49621\\)[\\d\\s-]+<br[\\s>/]+)", "")
-                        .replaceAll("\\(9", "8(9")
-                        .replaceAll("[\\(\\)]\\s*", "-")
-                        .replaceAll("<tr>\\s+<td colspan=5><hr></td>\\s+</tr>",
-                                "").replace("lightgrey", "lightblue");
-                matcher = pattern2.matcher(result);
-                while (matcher.find()) {
-                    phone = matcher.group();
-                    result = result.replaceAll(phone, "<a href=\"tel:" + phone
-                            + "\">" + phone + "</a>");
-                }
-                return result;
-            } else {
-                showProblemToast();
-                return getString(R.string.connection_problem);
-            }
-        }
-
     }
 
     private class GetBusLocationsTask extends TimerTask {
@@ -317,10 +216,12 @@ public class ModelFragment extends SherlockFragment {
                 if (busLoadingTimerMutex) {
                     routeId = id;
                     try {
-                        helper.loadContent(
+                        WebHelper.loadContent(
                                 new URL(getString(R.string.bus_location_url) + String.valueOf(id)),
                                 new BusLocationLoader(), "");
                     } catch (Exception e) {
+                        Log.e(getClass().getSimpleName(),
+                                "Exception retrieving bus location", e);
                     }
                 } else {
                     return;
@@ -349,88 +250,23 @@ public class ModelFragment extends SherlockFragment {
                                 .parseInt(contents[7]), Integer
                                 .parseInt(contents[0]), routeId, contents[3]));
                     }
-                } else
+                } else {
                     throw new Exception("parseBusLocs problem");
-
-            }
-        }
-    }
-
-    private class GetScheduleTask extends AsyncTask<Context, Void, Void> {
-        private Exception e = null;
-        private int id;
-        StringBuilder result = new StringBuilder();
-        Marker marker;
-
-        public GetScheduleTask(int id, Marker marker) {
-            this.id = id;
-            this.marker = marker;
-        }
-
-        @Override
-        protected Void doInBackground(Context... ctxt) {
-            try {
-                helper.loadContent(new URL(getString(R.string.schedule_url) + String.valueOf(id)),
-                        new ScheduleLoader(), "<");
-            } catch (Exception e) {
-                this.e = e;
-                Log.e(getClass().getSimpleName(),
-                        "Exception retrieving bus schedule content", e);
-            }
-            return (null);
-        }
-
-        @Override
-        public void onPostExecute(Void arg0) {
-            if (e == null) {
-                String strResult = result.toString();
-                if ((strResult == null) || (strResult.isEmpty())
-                        || (strResult.equals("<b>¹</b> -&nbsp;")))
-                    lastBusSchedule = "";
-                else
-                    lastBusSchedule = strResult;
-                marker.setSnippet(lastBusSchedule);
-                marker.showInfoWindow();
-            } else {
-                showProblemToast();
-            }
-        }
-
-        private class ScheduleLoader implements WebHelper.Parser {
-
-            @Override
-            public void parse(String line) throws Exception {
-                String tmp;
-                line = line.replaceAll(",", ".");
-                Pattern pattern = Pattern.compile("([¹:\\d]+)");
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    if ((tmp = matcher.group()).length() == 3)
-                        tmp += "&nbsp;&nbsp;";
-                    result.append("<b>" + tmp + "</b> -&nbsp;");
-                    if (matcher.find()) {
-                        result.append("<font  color=\"green\">"
-                                + matcher.group() + "</font>");
-                        while (matcher.find()) {
-                            result.append(" " + matcher.group());
-                        }
-                        result.append("<br />");
-                    }
                 }
-            }
 
+            }
         }
     }
 
     private class GetBusRoutesAndMarkersTask extends
-            AsyncTask<Context, Void, Void> {
+            AsyncTask<Void, Void, Void> {
         private Exception e = null;
         PolylineOptions busRoutesOption;
         ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
         ArrayList<MarkerOptions> busMarkerOptionsArray = new ArrayList<MarkerOptions>();
 
         @Override
-        protected Void doInBackground(Context... ctxt) {
+        protected Void doInBackground(Void... params) {
             try {
                 busRoutesAndMarkersTaskMutex = true;
                 descStopIdMap.clear();
@@ -439,7 +275,7 @@ public class ModelFragment extends SherlockFragment {
                     if (prefs.getBoolean(i.toString(), false)) {
                         int id = prefs.getInt("id_at_" + i.toString(), 0);
                         busRoutesOption = new PolylineOptions();
-                        helper.loadContent(
+                        WebHelper.loadContent(
                                 new URL(getString(R.string.map_routes_url) + String.valueOf(id)),
                                 new BusRoutesAndMarkersLoader(), "56,");
                         busRoutesOptionsArray.add(busRoutesOption);
@@ -473,7 +309,6 @@ public class ModelFragment extends SherlockFragment {
         }
 
         private class BusRoutesAndMarkersLoader implements WebHelper.Parser {
-
             @Override
             public void parse(String line) throws Exception {
                 line = line.replaceAll(",", ".");

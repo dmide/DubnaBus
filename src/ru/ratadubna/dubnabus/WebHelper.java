@@ -13,7 +13,7 @@ import java.net.URL;
  */
 public class WebHelper {
 
-    String getPage(URL url) throws Exception {
+    public static String getPage(URL url) throws Exception {
         StringBuilder buf;
         BufferedReader reader;
         int i = 0;
@@ -42,7 +42,7 @@ public class WebHelper {
         return buf.toString();
     }
 
-    void loadContent(URL url, Parser parser, String checkString)
+    public static void loadContent(URL url, Parser parser, String checkString)
             throws Exception {
         int i = 0;
         BufferedReader reader;

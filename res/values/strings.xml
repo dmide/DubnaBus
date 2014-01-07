@@ -25,15 +25,16 @@
     <string name="busesDM">Автобусы Дубна-Москва</string>
     <string name="busesMD">Автобусы Москва-Дубна</string>
     <string name="taxi">Такси</string>
-    <string name="connection_problem">Проблема при подключении к серверу ratadubna.ru. Возможно, он временно не работает.</string>
-    <string name="problem">Не удается получить данные, возможно, проблемы на сервисе ratadubna.ru. Попробуйте повторить действие.</string>
+    <string name="connection_problem">Проблема при подключении к серверу</string>
+    <string name="problem">Не удается получить данные, проблемы с соединением. Попробуйте повторить действие.</string>
+
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
     <!--map will only draw in dev with debug key-->
     <!--this key is generated in Google dev console and based on debug keystore which is-->
     <!--located in %user%/.android folder and unique to every user.-->
     <!--Therefore, you should generate this key every time you start dev with new machine or user-->
     <string name="debug_map_key">AIzaSyA6ucS_-IDMkpbINejrXaTsmixXrK3VQIc</string>
-    <string name="adUnitId">a1511a9cde2162e</string>
+
     <string name="playProblems">Неполадки с Google Play Services, установите обновление Google Play или прошивки</string>
     <string name="mapProblems">Возникли проблемы, возможно, Вам нужно обновить прошивку</string>
 
