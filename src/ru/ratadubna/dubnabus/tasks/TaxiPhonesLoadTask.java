@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 /**
  * Created by dmide on 07/01/14.
  */
-public class GetTaxiPhonesTask extends AsyncTask<Void, Void, Void> {
+
+public class TaxiPhonesLoadTask extends AsyncTask<Void, Void, Void> {
     private static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
             + "<style type=\"text/css\">td {white-space: nowrap;}</style>";
 
@@ -24,7 +25,7 @@ public class GetTaxiPhonesTask extends AsyncTask<Void, Void, Void> {
     private final ModelFragment modelFragment;
     private final String url;
 
-    public GetTaxiPhonesTask(ModelFragment modelFragment, String url) {
+    public TaxiPhonesLoadTask(ModelFragment modelFragment, String url) {
         this.modelFragment = modelFragment;
         this.url = url;
     }

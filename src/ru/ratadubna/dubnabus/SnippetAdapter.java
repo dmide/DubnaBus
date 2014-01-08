@@ -32,8 +32,9 @@ class SnippetAdapter implements InfoWindowAdapter {
         tv.setText(marker.getTitle());
         tv = (TextView) infoWindow.findViewById(R.id.snippet);
         String snippetText;
-        if ((snippetText = marker.getSnippet()) != null)
+        if ((snippetText = marker.getSnippet()) != null) {
             tv.setText(Html.fromHtml(snippetText, new ImageGetter(), null));
+        }
         return (infoWindow);
     }
 
@@ -49,12 +50,9 @@ class SnippetAdapter implements InfoWindowAdapter {
                 return null;
             }
 
-            Drawable d = context.getResources()
-                    .getDrawable(id);
+            Drawable d = context.getResources().getDrawable(id);
             d.setBounds(0, 0, 70, 45);
             return d;
         }
     }
-
-    ;
 }

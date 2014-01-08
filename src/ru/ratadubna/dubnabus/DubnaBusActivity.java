@@ -26,7 +26,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
     public static final String MODEL = "model", DIALOG = "dialog";
     public static boolean reloadOverlays = false;
-    private static final String BUS_NUMBER_REGEXP = "(¹\\d{1,3})";
+    private static final String BUS_NUMBER_REGEXP = "("+ ModelFragment.NUMBER_SYMBOL +"\\d{1,3})";
 
     private GoogleMap mMap;
     private ModelFragment model = null;
@@ -165,7 +165,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                 bus.setOverlay(mMap.addGroundOverlay(bus
                         .getGroundOverlayOptions()));
                 Marker marker = mMap.addMarker(bus.getMarkerOptions());
-//				marker.setVisible(false);
                 bus.setMarker(marker);
             }
         }

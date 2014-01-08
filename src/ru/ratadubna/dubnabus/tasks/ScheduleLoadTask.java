@@ -15,16 +15,17 @@ import java.util.regex.Pattern;
  * Created by dmide on 07/01/14.
  */
 
-public class GetScheduleTask extends AsyncTask<Void, Void, Void> {
-    private final static String NO_NUMBER = "<b>¹</b> -&nbsp;";
+public class ScheduleLoadTask extends AsyncTask<Void, Void, Void> {
+    private final static String NO_NUMBER = "<b>" + ModelFragment.NUMBER_SYMBOL + "</b> -&nbsp;";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("([" + ModelFragment.NUMBER_SYMBOL + ":\\d]+)");
 
     private StringBuilder result = new StringBuilder();
-    private Exception e = null;
+    private Exception e;
     private final Marker marker;
     private final ModelFragment modelFragment;
     private final int id;
 
-    public GetScheduleTask(ModelFragment modelFragment, int id, Marker marker) {
+    public ScheduleLoadTask(ModelFragment modelFragment, int id, Marker marker) {
         this.modelFragment = modelFragment;
         this.id = id;
         this.marker = marker;
@@ -62,11 +63,10 @@ public class GetScheduleTask extends AsyncTask<Void, Void, Void> {
 
     private class ScheduleLoader implements WebHelper.Parser {
         @Override
-        public void parse(String line) throws Exception {
+        public void parse(String line) {
             String tmp;
             line = line.replaceAll(",", ".");
-            Pattern pattern = Pattern.compile("([¹:\\d]+)");
-            Matcher matcher = pattern.matcher(line);
+            Matcher matcher = NUMBER_PATTERN.matcher(line);
             if (matcher.find()) {
                 if ((tmp = matcher.group()).length() == 3) {
                     tmp += "&nbsp;&nbsp;";

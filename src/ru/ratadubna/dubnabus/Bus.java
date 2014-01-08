@@ -3,6 +3,7 @@ package ru.ratadubna.dubnabus;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import android.app.Fragment;
 import android.graphics.Point;
 import android.location.Location;
 import android.util.SparseArray;
@@ -46,7 +47,7 @@ public class Bus {
 		this.route = route;
 		groundOverlayOptions = new GroundOverlayOptions().image(image)
 				.position(position, dimensions).bearing(bearing).zIndex(1);
-		String title = "¹" + routeNum;
+		String title = ModelFragment.NUMBER_SYMBOL + routeNum;
 		markerOptions = new MarkerOptions().position(position).title(title)
 				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
 	}

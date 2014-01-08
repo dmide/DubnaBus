@@ -3,9 +3,7 @@ package ru.ratadubna.dubnabus;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,94 +15,83 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class MenuFragment extends SherlockFragment implements
-		android.widget.AdapterView.OnItemClickListener {
-	private ListView lv;
-	private SparseBooleanArray positionHide = new SparseBooleanArray();
-	private SharedPreferences prefs = null;
+        android.widget.AdapterView.OnItemClickListener {
+    private SparseBooleanArray activeRoutes = new SparseBooleanArray();
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		setRetainInstance(true);
-	}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setRetainInstance(true);
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View result = inflater.inflate(R.layout.menu, container, false);
-		lv = (ListView) result.findViewById(R.id.listView);
-		lv.setAdapter(new MenuItemsAdapter(getActivity(),
-				android.R.layout.simple_list_item_multiple_choice, BusRoutes
-						.GetRoutes()));
-		lv.setOnItemClickListener(this);
-		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		return (result);
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View result = inflater.inflate(R.layout.menu, container, false);
+        ListView lv = (ListView) result.findViewById(R.id.listView);
+        lv.setAdapter(new MenuItemsAdapter(getActivity(),
+                android.R.layout.simple_list_item_multiple_choice, BusRoute
+                .getRoutesArray()));
+        lv.setOnItemClickListener(this);
+        return (result);
+    }
 
-	@Override
-	public void onItemClick(android.widget.AdapterView<?> parent, View v,
-			int position, long id) {
-		CheckedTextView tv = (CheckedTextView) v.findViewById(R.id.checkView);
-		positionHide.put(position, !tv.isChecked());
-		tv.setChecked(!tv.isChecked());
-	}
+    @Override
+    public void onItemClick(android.widget.AdapterView<?> parent, View v,
+                            int position, long id) {
+        CheckedTextView tv = (CheckedTextView) v.findViewById(R.id.checkView);
+        activeRoutes.put(position, !tv.isChecked());
+        tv.setChecked(!tv.isChecked());
+    }
 
-	void saveSelection() {
-		SharedPreferences.Editor editor = prefs.edit();
-		Integer i = 0;
-		for (i = 0; i < BusRoutes.GetRoutes().size(); i++) {
-			editor.putBoolean(i.toString(), positionHide.get(i, false));
-			editor.putInt("id_at_" + i.toString(), BusRoutes.GetRoutes().get(i)
-					.getRouteServiceId());
-		}
-		editor.putInt(ModelFragment.ROUTES_ARRAY_SIZE, i);
-		editor.commit();
-	}
+    void saveSelection() {
+        for (int i = 0; i < BusRoute.getRoutesArraySize(); i++) {
+            BusRoute.getRoute(i).setActive(activeRoutes.get(i, false));
+        }
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		for (Integer i = 0; i < BusRoutes.GetRoutes().size(); i++) {
-			positionHide.put(i, prefs.getBoolean(i.toString(), false));
-		}
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        for (int i = 0; i < BusRoute.getRoutesArraySize(); i++) {
+            activeRoutes.put(i, BusRoute.getRoute(i).isActive());
+        }
+    }
 
-	private class MenuItemsAdapter extends ArrayAdapter<BusRoutes> {
-		private ArrayList<BusRoutes> items;
-		private Context context;
+    private class MenuItemsAdapter extends ArrayAdapter<BusRoute> {
+        private final ArrayList<BusRoute> items;
+        private final Context context;
 
-		public MenuItemsAdapter(Context context, int textViewResourceId,
-				ArrayList<BusRoutes> items) {
-			super(context, textViewResourceId, items);
-			this.context = context;
-			this.items = items;
-		}
+        public MenuItemsAdapter(Context context, int textViewResourceId,
+                                ArrayList<BusRoute> items) {
+            super(context, textViewResourceId, items);
+            this.context = context;
+            this.items = items;
+        }
 
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View view = convertView;
-			if (view == null) {
-				LayoutInflater inflater = (LayoutInflater) context
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				view = inflater.inflate(R.layout.row, null);
-			}
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater inflater = (LayoutInflater) context
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.row, null);
+            }
 
-			BusRoutes item = items.get(position);
-			if (item != null) {
-				CheckedTextView itemView = (CheckedTextView) view
-						.findViewById(R.id.checkView);
-				if (itemView != null) {
-					itemView.setText(item.getDesc());
-					itemView.setChecked(positionHide.get(position));
-				}
-			}
+            BusRoute item = items.get(position);
+            if (item != null) {
+                CheckedTextView itemView = (CheckedTextView) view
+                        .findViewById(R.id.checkView);
+                if (itemView != null) {
+                    itemView.setText(item.getDesc());
+                    itemView.setChecked(activeRoutes.get(position));
+                }
+            }
+            return view;
+        }
 
-			return view;
-		}
-
-		public int getCount() {
-			return items.size();
-		}
-
-	}
+        public int getCount() {
+            return items.size();
+        }
+    }
 
 }
