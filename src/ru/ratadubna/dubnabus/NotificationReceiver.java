@@ -16,6 +16,20 @@ public class NotificationReceiver extends BroadcastReceiver {
     private static final String ACTION_NOTIFICATION = "ru.ratadubna.dubnabus.action.NOTIFICATION";
     private static final int NOTIFY_ID = 1337;
 
+    static void scheduleAlarm(Context ctxt, int actual_delay, int delay,
+                              String bus_number, String stopTitle) {
+        AlarmManager mgr = (AlarmManager) ctxt
+                .getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(ACTION_NOTIFICATION)
+                .putExtra(DELAY, delay)
+                .putExtra(BUS_NUMBER, bus_number)
+                .putExtra(STOP_TITLE, stopTitle);
+        PendingIntent pi = PendingIntent.getBroadcast(ctxt, 31337, i,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        mgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                + actual_delay, pi);
+    }
+
     @Override
     public void onReceive(Context ctxt, Intent i) {
         if (i.getAction().equals(ACTION_NOTIFICATION)) {
@@ -40,19 +54,5 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .getSystemService(Context.NOTIFICATION_SERVICE));
             mgr.notify(NOTIFY_ID, builder.getNotification());
         }
-    }
-
-    static void scheduleAlarm(Context ctxt, int actual_delay, int delay,
-                              String bus_number, String stopTitle) {
-        AlarmManager mgr = (AlarmManager) ctxt
-                .getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(ACTION_NOTIFICATION)
-                .putExtra(DELAY, delay)
-                .putExtra(BUS_NUMBER, bus_number)
-                .putExtra(STOP_TITLE, stopTitle);
-        PendingIntent pi = PendingIntent.getBroadcast(ctxt, 31337, i,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        mgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
-                + actual_delay, pi);
     }
 }

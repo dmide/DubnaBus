@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 public class BusStopObserverDialogFragment extends DialogFragment implements
         DialogInterface.OnClickListener {
+    private static final String NOTIFICATION_DELAY = "notificationDelay";
     private static final String KEY_TITLE = "title";
     private SharedPreferences prefs;
     private View form;
@@ -34,7 +35,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
                     .getDefaultSharedPreferences(getActivity());
         }
         setRetainInstance(true);
-        int delay = prefs.getInt("notificationDelay", 10);
+        int delay = prefs.getInt(NOTIFICATION_DELAY, 10);
         form = getActivity().getLayoutInflater().inflate(R.layout.dialog, null);
         NumberPicker nb = (NumberPicker) form.findViewById(R.id.numberpicker);
         nb.setCurrent(delay);
@@ -47,7 +48,7 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
     @Override
     public void onClick(DialogInterface dialog, int which) {
         int delay = ((NumberPicker) form.findViewById(R.id.numberpicker)).getCurrent();
-        prefs.edit().putInt("notificationDelay", delay).apply();
+        prefs.edit().putInt(NOTIFICATION_DELAY, delay).apply();
         Entry<Integer, Integer> actualDelay = ((DubnaBusActivity) getActivity())
                 .getModel().getNearestBusDelay(delay);
         if (actualDelay != null) {

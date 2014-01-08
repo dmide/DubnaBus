@@ -44,17 +44,17 @@ public class MenuFragment extends SherlockFragment implements
         tv.setChecked(!tv.isChecked());
     }
 
-    void saveSelection() {
-        for (int i = 0; i < BusRoute.getRoutesArraySize(); i++) {
-            BusRoute.getRoute(i).setActive(activeRoutes.get(i, false));
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         for (int i = 0; i < BusRoute.getRoutesArraySize(); i++) {
             activeRoutes.put(i, BusRoute.getRoute(i).isActive());
+        }
+    }
+
+    void saveSelection() {
+        for (int i = 0; i < BusRoute.getRoutesArraySize(); i++) {
+            BusRoute.getRoute(i).setActive(activeRoutes.get(i, false));
         }
     }
 

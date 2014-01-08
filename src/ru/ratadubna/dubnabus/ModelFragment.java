@@ -102,13 +102,6 @@ public class ModelFragment extends SherlockFragment {
         return delays.firstEntry();
     }
 
-    private void deliverModel() {
-        if (BusRoute.getRoutesArraySize() == 0 && contentsTask == null) {
-            contentsTask = new BusRoutesLoadTask(this);
-            executeAsyncTask(contentsTask);
-        }
-    }
-
     void loadTaxiPage(String url) {
         TaxiPhonesLoadTask taxiTask = new TaxiPhonesLoadTask(this, url);
         ModelFragment.executeAsyncTask(taxiTask);
@@ -133,6 +126,13 @@ public class ModelFragment extends SherlockFragment {
             busLoadingTimer.cancel();
         }
         busLoadingTimerMutex = false;
+    }
+
+    private void deliverModel() {
+        if (BusRoute.getRoutesArraySize() == 0 && contentsTask == null) {
+            contentsTask = new BusRoutesLoadTask(this);
+            executeAsyncTask(contentsTask);
+        }
     }
 
     private Integer getColor(int i) {
