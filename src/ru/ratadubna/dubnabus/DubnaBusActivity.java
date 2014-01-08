@@ -2,8 +2,6 @@ package ru.ratadubna.dubnabus;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -27,14 +25,13 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
         OnMarkerClickListener, OnCameraChangeListener,
         OnInfoWindowClickListener {
 
-    public static final String MODEL = "model", DIALOG = "dialog";
+    private static final String MODEL = "model", DIALOG = "dialog";
     public static boolean reloadOverlays = false;
     private static final String BUS_NUMBER_REGEXP = "(" + ModelFragment.NUMBER_SYMBOL + "\\d{1,3})";
     private static WeakReference<DubnaBusActivity> wrActivity = null; // http://stackoverflow.com/a/14222708/2093236
 
     private GoogleMap mMap;
-    private ModelFragment model = null;
-    private BusStopObserverDialogFragment dialog = null;
+    private ModelFragment model;
 
     @Override
     public void onResume() {
@@ -124,9 +121,10 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
     @Override
     public void onInfoWindowClick(Marker marker) {
         if (!marker.getTitle().matches(BUS_NUMBER_REGEXP) &&
-                ((model.lastBusSchedule != null) && !model.lastBusSchedule.isEmpty())) {
-            if ((dialog = (BusStopObserverDialogFragment) getSupportFragmentManager()
-                    .findFragmentByTag(DIALOG)) == null) {
+                ((model.selectedBusStopSchedule != null) && !model.selectedBusStopSchedule.isEmpty())) {
+            BusStopObserverDialogFragment dialog = (BusStopObserverDialogFragment) getSupportFragmentManager()
+                    .findFragmentByTag(DIALOG);
+            if (dialog  == null) {
                 dialog = BusStopObserverDialogFragment.newInstance(marker
                         .getTitle());
                 wrActivity.get().getSupportFragmentManager().beginTransaction()

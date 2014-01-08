@@ -6,7 +6,7 @@ public class BusRoute {
     private String desc;
     private int routeServiceId, routeRealId;
     private boolean isActive;
-    private static ArrayList<BusRoute> routes = new ArrayList<BusRoute>();
+    private static final ArrayList<BusRoute> routes = new ArrayList<BusRoute>();
 
     public static ArrayList<BusRoute> getRoutesArray() {
         return routes;

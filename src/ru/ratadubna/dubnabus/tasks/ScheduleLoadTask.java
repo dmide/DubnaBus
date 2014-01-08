@@ -19,8 +19,8 @@ public class ScheduleLoadTask extends AsyncTask<Void, Void, Void> {
     private final static String NO_NUMBER = "<b>" + ModelFragment.NUMBER_SYMBOL + "</b> -&nbsp;";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("([" + ModelFragment.NUMBER_SYMBOL + ":\\d]+)");
 
-    private StringBuilder result = new StringBuilder();
     private Exception e;
+    private final StringBuilder result = new StringBuilder();
     private final Marker marker;
     private final ModelFragment modelFragment;
     private final int id;
@@ -50,11 +50,11 @@ public class ScheduleLoadTask extends AsyncTask<Void, Void, Void> {
             String strResult = result.toString();
             if ((strResult == null) || (strResult.isEmpty())
                     || (strResult.equals(NO_NUMBER))) {
-                modelFragment.lastBusSchedule = "";
+                modelFragment.selectedBusStopSchedule = "";
             } else {
-                modelFragment.lastBusSchedule = strResult;
+                modelFragment.selectedBusStopSchedule = strResult;
             }
-            marker.setSnippet(modelFragment.lastBusSchedule);
+            marker.setSnippet(modelFragment.selectedBusStopSchedule);
             marker.showInfoWindow();
         } else {
             modelFragment.showProblemToast();

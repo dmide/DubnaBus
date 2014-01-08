@@ -16,7 +16,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 
 public class MenuFragment extends SherlockFragment implements
         android.widget.AdapterView.OnItemClickListener {
-    private SparseBooleanArray activeRoutes = new SparseBooleanArray();
+    private final SparseBooleanArray activeRoutes = new SparseBooleanArray();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

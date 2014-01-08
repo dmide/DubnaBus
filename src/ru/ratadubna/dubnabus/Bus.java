@@ -1,35 +1,28 @@
 package ru.ratadubna.dubnabus;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import android.app.Fragment;
 import android.graphics.Point;
 import android.location.Location;
 import android.util.SparseArray;
-
 import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Bus {
-    private static ArrayList<Bus> busList = new ArrayList<Bus>();
-    private static HashSet<String> activeBuses = new HashSet<String>();
+    private static final ArrayList<Bus> busList = new ArrayList<Bus>();
+    private static final HashSet<String> activeBuses = new HashSet<String>();
     private static float dimensions = 196;
     private static final SparseArray<String> busTypes = new SparseArray<String>();
     private static final BitmapDescriptor image = BitmapDescriptorFactory
             .fromAsset("bus_arrow.png");
 
-    private String id;
-    private int speed, type, route, routeNum;
-    private GroundOverlayOptions groundOverlayOptions;
+    private final String id;
+    private final int type, route, routeNum;
+    private final GroundOverlayOptions groundOverlayOptions;
+    private final MarkerOptions markerOptions;
+    private int speed;
     private GroundOverlay overlay = null;
-    private MarkerOptions markerOptions;
     private Marker marker = null;
     private String time = "";
 

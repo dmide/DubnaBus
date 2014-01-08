@@ -10,9 +10,9 @@ import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 
 public class NotificationReceiver extends BroadcastReceiver {
-    public static final String DELAY = "delay";
-    public static final String BUS_NUMBER = "bus_number";
-    public static final String STOP_TITLE = "stopTitle";
+    private static final String DELAY = "delay";
+    private static final String BUS_NUMBER = "bus_number";
+    private static final String STOP_TITLE = "stopTitle";
     private static final String ACTION_NOTIFICATION = "ru.ratadubna.dubnabus.action.NOTIFICATION";
     private static final int NOTIFY_ID = 1337;
 

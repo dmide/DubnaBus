@@ -66,24 +66,4 @@ public class BusStopObserverDialogFragment extends DialogFragment implements
                     Toast.LENGTH_LONG).show();
         }
     }
-
-    @Override
-    public void onDismiss(DialogInterface unused) {
-        super.onDismiss(unused);
-    }
-
-    @Override
-    public void onCancel(DialogInterface unused) {
-        super.onCancel(unused);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public int show(FragmentTransaction transaction, String tag) {
-        return super.show(transaction, tag);
-    }
 }

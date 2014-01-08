@@ -25,12 +25,12 @@ public class ModelFragment extends SherlockFragment {
             0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
             0x00880088, 0x00888888};
 
-    public String lastBusSchedule;
+    public String selectedBusStopSchedule;
     private BusRoutesLoadTask contentsTask;
     private Timer busLoadingTimer;
     private volatile boolean busLoadingTimerMutex = false;
     private volatile boolean busRoutesAndMarkersTaskMutex = false;
-    private HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
+    private final HashMap<String, Integer> descStopIdMap = new HashMap<String, Integer>();
 
     private final Handler busLocationUpdateHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -39,8 +39,8 @@ public class ModelFragment extends SherlockFragment {
     };
 
     @TargetApi(11)
-    static public <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
-                                            T... params) {
+    static private <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
+                                             T... params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
         } else {
@@ -56,11 +56,8 @@ public class ModelFragment extends SherlockFragment {
     }
 
     public void showProblemToast() {
-        try {
-            Toast.makeText(getActivity(), getString(R.string.problem),
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-        }
+        Toast.makeText(getActivity(), getString(R.string.problem),
+                Toast.LENGTH_LONG).show();
     }
 
     boolean isMapLoaded() {
@@ -87,15 +84,10 @@ public class ModelFragment extends SherlockFragment {
         ArrayList<BusRoute> busRoutes = BusRoute.getRoutesArray();
         for (int i = 0; i < busRoutes.size(); i++) {
             if (BusRoute.getRoute(i).isActive()) {
-                try {
-                    routeId = busRoutes.get(i).getRouteRealId();
-                    timeDelay = getDelayFromStoredSchedule(targetDelay, routeId);
-                    if (timeDelay != 0) {
-                        delays.put(timeDelay, routeId);
-                    }
-                } catch (ParseException e) {
-                    Log.e(getClass().getSimpleName(),
-                            "Exception parsing time from string", e);
+                routeId = busRoutes.get(i).getRouteRealId();
+                timeDelay = getDelayFromSelectedSchedule(targetDelay, routeId);
+                if (timeDelay != 0) {
+                    delays.put(timeDelay, routeId);
                 }
             }
         }
@@ -143,11 +135,10 @@ public class ModelFragment extends SherlockFragment {
         return color;
     }
 
-    private int getDelayFromStoredSchedule(int targetDelay, int route)
-            throws ParseException {
+    private int getDelayFromSelectedSchedule(int targetDelay, int route) {
         boolean suitableTimeFound = false;
         Pattern pattern = Pattern.compile(NUMBER_SYMBOL + route + "[<&](.+?)<br");
-        Matcher matcher = pattern.matcher(lastBusSchedule);
+        Matcher matcher = pattern.matcher(selectedBusStopSchedule);
         if (matcher.find()) {
             // resultTime variable is here because server returns arrival times
             // in wrong order after 00:00
@@ -161,7 +152,6 @@ public class ModelFragment extends SherlockFragment {
             while (matcher2.find()) {
                 scheduleTime = matcher2.group(1);
                 Calendar calendarSchedule = new GregorianCalendar();
-                ;
                 calendarSchedule.set(Calendar.HOUR_OF_DAY,
                         Integer.parseInt(scheduleTime.substring(0, 2)));
                 calendarSchedule.set(Calendar.MINUTE,
@@ -235,8 +225,8 @@ public class ModelFragment extends SherlockFragment {
 
     private class GetBusRoutesAndMarkersTask extends AsyncTask<Void, Void, Void> {
         PolylineOptions busRoutesOption;
-        ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
-        ArrayList<MarkerOptions> busMarkerOptionsArray = new ArrayList<MarkerOptions>();
+        final ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
+        final ArrayList<MarkerOptions> busMarkerOptionsArray = new ArrayList<MarkerOptions>();
         private Exception e;
 
         @Override
