@@ -2,6 +2,7 @@ package ru.ratadubna.dubnabus;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
@@ -20,13 +21,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.lang.ref.WeakReference;
+
 public class DubnaBusActivity extends SherlockFragmentActivity implements
         OnMarkerClickListener, OnCameraChangeListener,
         OnInfoWindowClickListener {
 
     public static final String MODEL = "model", DIALOG = "dialog";
     public static boolean reloadOverlays = false;
-    private static final String BUS_NUMBER_REGEXP = "("+ ModelFragment.NUMBER_SYMBOL +"\\d{1,3})";
+    private static final String BUS_NUMBER_REGEXP = "(" + ModelFragment.NUMBER_SYMBOL + "\\d{1,3})";
+    private static WeakReference<DubnaBusActivity> wrActivity = null; // http://stackoverflow.com/a/14222708/2093236
 
     private GoogleMap mMap;
     private ModelFragment model = null;
@@ -48,6 +52,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wrActivity = new WeakReference<DubnaBusActivity>(this);
         setTheme(R.style.Theme_Sherlock_Light);
         model = (ModelFragment) getSupportFragmentManager()
                 .findFragmentByTag(MODEL);
@@ -124,7 +129,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                     .findFragmentByTag(DIALOG)) == null) {
                 dialog = BusStopObserverDialogFragment.newInstance(marker
                         .getTitle());
-                getSupportFragmentManager().beginTransaction()
+                wrActivity.get().getSupportFragmentManager().beginTransaction()
                         .add(dialog, DIALOG).commit();
             }
         }
