@@ -7,12 +7,10 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.*;
 import com.json.parsers.JSONParser;
-import ru.ratadubna.dubnabus.tasks.BusRoutesLoadTask;
 import ru.ratadubna.dubnabus.tasks.ScheduleLoadTask;
 import ru.ratadubna.dubnabus.tasks.TaxiPhonesLoadTask;
 
 import java.net.URL;
-import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -26,7 +24,6 @@ public class ModelFragment extends SherlockFragment {
             0x00880088, 0x00888888};
 
     public String selectedBusStopSchedule;
-    private BusRoutesLoadTask contentsTask;
     private Timer busLoadingTimer;
     private volatile boolean busLoadingTimerMutex = false;
     private volatile boolean busRoutesAndMarkersTaskMutex = false;
@@ -52,7 +49,6 @@ public class ModelFragment extends SherlockFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-        deliverModel();
     }
 
     public void showProblemToast() {
@@ -118,13 +114,6 @@ public class ModelFragment extends SherlockFragment {
             busLoadingTimer.cancel();
         }
         busLoadingTimerMutex = false;
-    }
-
-    private void deliverModel() {
-        if (BusRoute.getRoutesArraySize() == 0 && contentsTask == null) {
-            contentsTask = new BusRoutesLoadTask(this);
-            executeAsyncTask(contentsTask);
-        }
     }
 
     private Integer getColor(int i) {

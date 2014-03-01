@@ -1,6 +1,7 @@
 package ru.ratadubna.dubnabus;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -60,6 +61,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                     .commit();
         }
         setContentView(R.layout.main);
+        initBusRoutes();
     }
 
     @Override
@@ -173,6 +175,16 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
         }
         reloadOverlays = false;
         model.continueLoadingBusLocations();
+    }
+
+    private void initBusRoutes() {
+        TypedArray ar = getResources().obtainTypedArray(R.array.bus_routes);
+        int len = ar.length();
+        for (int i = 0; i < len; i++){
+            String[] contents = ar.getString(i).split("#");
+            BusRoute.addRouteToArray(Integer.parseInt(contents[0]), contents[2], Integer.parseInt(contents[1]));
+        }
+        ar.recycle();
     }
 
     private void setUpMapIfNeeded() {
