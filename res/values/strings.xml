@@ -33,7 +33,9 @@
     <!--this key is generated in Google dev console and based on debug keystore which is-->
     <!--located in %user%/.android folder and unique to every user.-->
     <!--Therefore, you should generate this key every time you start dev with new machine or user-->
+
     <string name="debug_map_key">AIzaSyA6ucS_-IDMkpbINejrXaTsmixXrK3VQIc</string>
+    <!--<string name="debug_map_key">AIzaSyDVyKh_-u72Qvj2HJBzqkaKZ-Bz_sGbWzA</string>  #1 -->
 
     <string name="playProblems">Неполадки с Google Play Services, установите обновление Google Play или прошивки</string>
     <string name="mapProblems">Возникли проблемы, возможно, Вам нужно обновить прошивку</string>
@@ -43,9 +45,9 @@
     <string name="buses_DM_url">http://m.rasp.yandex.ru/search?toName=Москва\u0026fromName=Дубна\u0026search_type=bus\u0026fromId=c215</string>
     <string name="buses_MD_url">http://m.rasp.yandex.ru/search?toName=Дубна\u0026toId=c215\u0026fromName=Москва\u0026search_type=bus</string>
     <string name="taxi_url">http://www.dubna.ru/143</string>
-    <string name="routes_url">http://www.ratadubna.ru/nav/d.php?o=1001</string>
-    <string name="map_routes_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1002&m=]]></string>
-    <string name="schedule_url"><![CDATA[http://ratadubna.ru/nav/d.php?o=1005&s=]]></string>
+    <string name="map_routes_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=1006&m=]]></string>
+    <string name="map_stops_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=1002&p=1&m=]]></string>
+    <string name="schedule_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=5&s=]]></string>
     <string name="bus_location_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=1004]]></string>
     <string name="bus_type_59_remote_file">file:///android_res/drawable/busType59.png</string>
     <string name="bus_type_91_remote_file">file:///android_res/drawable/busType91.png</string>

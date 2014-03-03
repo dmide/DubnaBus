@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 /**
  * Created by dmide on 07/01/14.
@@ -52,6 +53,8 @@ public class WebHelper {
                 }
                 loaded = true;
             } while (!loaded && (++i < 3)); // trying to receive page 3 times
+        } catch (Exception e) {
+            throw new Exception("Problem loading content", e);
         } finally {
             closeReader(reader, "ModelFragment loadContent");
         }
@@ -65,7 +68,7 @@ public class WebHelper {
         c.setRequestMethod("GET");
         c.setReadTimeout(15000);
         c.connect();
-        return new BufferedReader(new InputStreamReader(c.getInputStream()));
+        return new BufferedReader(new InputStreamReader(c.getInputStream(), Charset.forName("UTF-8")));
     }
 
     private static void closeReader(BufferedReader reader, String errorMsg) {

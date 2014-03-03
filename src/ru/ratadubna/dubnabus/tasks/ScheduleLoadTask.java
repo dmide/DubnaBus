@@ -71,9 +71,9 @@ public class ScheduleLoadTask extends AsyncTask<Void, Void, Void> {
                 if ((tmp = matcher.group()).length() == 3) {
                     tmp += "&nbsp;&nbsp;";
                 }
-                result.append("<b>" + tmp + "</b> -&nbsp;");
+                result.append("<b>" + ModelFragment.NUMBER_SYMBOL + tmp + "</b> -&nbsp;");
                 if (matcher.find()) {
-                    result.append("<font  color=\"green\">"
+                    result.append("<font  color=\"#00BA2F\">"
                             + matcher.group() + "</font>");
                     while (matcher.find()) {
                         result.append(" " + matcher.group());

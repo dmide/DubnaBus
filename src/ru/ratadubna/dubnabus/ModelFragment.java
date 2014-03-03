@@ -6,7 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.*;
-import com.json.parsers.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import ru.ratadubna.dubnabus.tasks.ScheduleLoadTask;
 import ru.ratadubna.dubnabus.tasks.TaxiPhonesLoadTask;
 
@@ -62,7 +63,8 @@ public class ModelFragment extends SherlockFragment {
 
     void loadMapRoutes() {
         if (!busRoutesAndMarkersTaskMutex) {
-            executeAsyncTask(new GetBusRoutesAndMarkersTask());
+            executeAsyncTask(new GetBusRoutesTask());
+            executeAsyncTask(new GetBusStopsTask());
         }
     }
 
@@ -184,18 +186,18 @@ public class ModelFragment extends SherlockFragment {
 
         private class BusLocationLoader implements WebHelper.Parser {
             @Override
-            public void parse(String line) {
-                JSONParser parser = new JSONParser();
-                Map jsonData = parser.parseJson(line);
-                ArrayList<HashMap> busesList = (ArrayList<HashMap>) jsonData.get("root");
+            public void parse(String line) throws Exception{
+                JSONArray jsonArray = new JSONArray(line);
                 String id, time;
                 int bearing, routeNum, routeId, type;
                 LatLng latLng;
-                for (HashMap bus : busesList) {
-                    id = (String) bus.get("id");
+                JSONObject bus;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    bus = (JSONObject) jsonArray.get(i);
+                    id = String.valueOf(bus.get("id"));
                     time = (String) bus.get("dt");
-                    bearing = Integer.valueOf((String) bus.get("dg"));
-                    ArrayList jLatLng = (ArrayList) bus.get("lc");
+                    bearing = (Integer) bus.get("dg");
+                    JSONArray jLatLng = (JSONArray) bus.get("lc");
                     latLng = new LatLng(Double.valueOf((String) jLatLng.get(0)),
                             Double.valueOf((String) jLatLng.get(1)));
                     routeNum = Integer.valueOf((String) bus.get("rn"));
@@ -212,9 +214,7 @@ public class ModelFragment extends SherlockFragment {
         }
     }
 
-    private class GetBusRoutesAndMarkersTask extends AsyncTask<Void, Void, Void> {
-        PolylineOptions busRoutesOption;
-        final ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
+    private class GetBusStopsTask extends AsyncTask<Void, Void, Void> {
         final ArrayList<MarkerOptions> busMarkerOptionsArray = new ArrayList<MarkerOptions>();
         private Exception e;
 
@@ -226,11 +226,9 @@ public class ModelFragment extends SherlockFragment {
                 for (BusRoute route : BusRoute.getRoutesArray()) {
                     if (route.isActive()) {
                         int serviceId = route.getRouteServiceId();
-                        busRoutesOption = new PolylineOptions();
                         WebHelper.loadContent(
-                                new URL(getString(R.string.map_routes_url) + String.valueOf(serviceId)),
-                                new BusRoutesAndMarkersLoader(), "56,");
-                        busRoutesOptionsArray.add(busRoutesOption);
+                                new URL(getString(R.string.map_stops_url) + String.valueOf(serviceId)),
+                                new BusStopsLoader(), "56.");
                     }
                 }
             } catch (Exception e) {
@@ -244,11 +242,6 @@ public class ModelFragment extends SherlockFragment {
         @Override
         public void onPostExecute(Void arg0) {
             if (e == null) {
-                int i = 0;
-                for (PolylineOptions options : busRoutesOptionsArray) {
-                    ((DubnaBusActivity) getActivity()).addRoute(options
-                            .color(getColor(i++)));
-                }
                 for (MarkerOptions options : busMarkerOptionsArray) {
                     ((DubnaBusActivity) getActivity()).addMarker(options);
                 }
@@ -259,43 +252,113 @@ public class ModelFragment extends SherlockFragment {
             busRoutesAndMarkersTaskMutex = false;
         }
 
-        private class BusRoutesAndMarkersLoader implements WebHelper.Parser {
+        private class BusStopsLoader implements WebHelper.Parser {
             @Override
             public void parse(String line) throws Exception {
-                line = line.replaceAll(",", ".");
-
-                Pattern pattern = Pattern.compile("([0-9]{2}.[0-9]+)");
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    double lat, lng;
-                    lat = Double.parseDouble(matcher.group());
-                    if (matcher.find()) {
-                        lng = Double.parseDouble(matcher.group());
-                    } else {
-                        throw new Exception("parseBusRoutes problem");
-                    }
-                    busRoutesOption.add(new LatLng(lat, lng));
-                } else {
-                    throw new Exception("parseBusRoutes problem");
-                }
-
-                Pattern pattern2 = Pattern.compile("([0-9]{2}.[0-9]+)\\s+([0-9]{2}.[0-9]+)\\s+(.+)\\s+([0-9]+)");
-                matcher = pattern2.matcher(line);
-                if (matcher.find()) {
-                    double lat = Double.parseDouble(matcher.group(1)), lng = Double
-                            .parseDouble(matcher.group(2));
-                    String desc = matcher.group(3);
-                    int id = Integer.parseInt(matcher.group(4));
+                JSONArray jsonArray = new JSONArray(line);
+                JSONObject stop;
+                int id;
+                double lat, lng;
+                String name;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    stop = (JSONObject) jsonArray.get(i);
+                    id = Integer.valueOf((String) stop.get("id"));
+                    JSONArray lc = (JSONArray) stop.get("lc");
+                    lat = Double.parseDouble((String)lc.get(0));
+                    lng = Double.parseDouble((String)lc.get(1));
+                    name = decodeFromUtf8((String) stop.get("name"));
                     if (!descStopIdMap.containsValue(id)) {
                         busMarkerOptionsArray.add(new MarkerOptions()
                                 .position(new LatLng(lat, lng))
-                                .title(desc)
+                                .title(name)
                                 .icon(BitmapDescriptorFactory
                                         .fromAsset("bustop31.png")));
-                        descStopIdMap.put(desc, id);
+                        descStopIdMap.put(name, id);
                     }
                 }
             }
         }
     }
+
+    //it's surprisingly unfortunate that there's no way in Java to do this
+    //apart from haul an apache dependency. hacky and ugly.
+    private String decodeFromUtf8(String name) {
+        String utf8CharRegexp = "\\\\u.{4}";
+        Pattern pattern = Pattern.compile(utf8CharRegexp);
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            do {
+                String utf8Char = matcher.group();
+                int hexVal = Integer.parseInt(utf8Char.substring(2), 16);
+                utf8Char = "";
+                utf8Char += (char) hexVal;
+                name = name.replaceFirst(utf8CharRegexp, utf8Char);
+            } while (matcher.find());
+        }
+        return name;
+    }
+
+    private class GetBusRoutesTask extends AsyncTask<Void, Void, Void> {
+        final ArrayList<PolylineOptions> busRoutesOptionsArray = new ArrayList<PolylineOptions>();
+        private Exception e;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                busRoutesAndMarkersTaskMutex = true;
+                for (BusRoute route : BusRoute.getRoutesArray()) {
+                    if (route.isActive()) {
+                        int serviceId = route.getRouteServiceId();
+                        WebHelper.loadContent(
+                                new URL(getString(R.string.map_routes_url) + String.valueOf(serviceId)),
+                                new BusRoutesLoader(), "56.");
+                    }
+                }
+            } catch (Exception e) {
+                this.e = e;
+                Log.e(getClass().getSimpleName(),
+                        "Exception retrieving bus maproutes content", e);
+            }
+            return (null);
+        }
+
+        @Override
+        public void onPostExecute(Void arg0) {
+            if (e == null) {
+                int i = 0, j = 0;
+                for (PolylineOptions options : busRoutesOptionsArray) {
+                    ((DubnaBusActivity) getActivity()).addRoute(options
+                            .color(getColor(j)));
+                    i++;
+                    j = i/2;
+                }
+                startLoadingBusLocations();
+            } else {
+                showProblemToast();
+            }
+            busRoutesAndMarkersTaskMutex = false;
+        }
+
+        private class BusRoutesLoader implements WebHelper.Parser {
+            @Override
+            public void parse(String line) throws Exception {
+                JSONArray jsonArray = new JSONArray(line);
+                JSONArray subArray;
+                JSONArray coordinates;
+                double lat, lng;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    subArray = (JSONArray) jsonArray.get(i);
+                    PolylineOptions busRoutesOptions = new PolylineOptions();
+                    for (int j = 0; j < subArray.length(); j++) {
+                        coordinates = (JSONArray) subArray.get(j);
+                        lat = Double.parseDouble((String)coordinates.get(0));
+                        lng = Double.parseDouble((String)coordinates.get(1));
+                        busRoutesOptions.add(new LatLng(lat, lng));
+                    }
+                    busRoutesOptionsArray.add(busRoutesOptions);
+                }
+            }
+        }
+    }
 }
+
