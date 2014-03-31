@@ -1,8 +1,17 @@
 package ru.ratadubna.dubnabus;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.*;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.*;
@@ -20,6 +29,7 @@ import java.util.regex.Pattern;
 public class ModelFragment extends SherlockFragment {
 
     public static final String NUMBER_SYMBOL = "¹";
+    public static final String TAXI_DIALOG_SHOWED = "TAXI_DIALOG_SHOWED";
     private static final int[] COLORS = {0x00FF0000, 0x000000FF, 0x00FF00FF,
             0x00FF8800, 0x000088FF, 0x00FF88FF, 0x00880000, 0x00000088,
             0x00880088, 0x00888888};
@@ -44,6 +54,35 @@ public class ModelFragment extends SherlockFragment {
         } else {
             task.execute(params);
         }
+    }
+
+    public static void showPromoDialog(final Activity activity) {
+        View rateDialog = View.inflate(activity, R.layout.promo_dialog, null);
+        CheckBox checkBox = (CheckBox) rateDialog.findViewById(R.id.checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                PreferenceManager.getDefaultSharedPreferences(activity).edit().putBoolean(TAXI_DIALOG_SHOWED, isChecked).commit();
+            }
+        });
+        new AlertDialog.Builder(activity)
+                .setView(rateDialog)
+                .setPositiveButton(activity.getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Uri uri = Uri.parse(activity.getString(R.string.taxi_app_link));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        activity.startActivity(intent);
+                    }
+                })
+                .setNegativeButton(activity.getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.finish();
+                    }
+                })
+                .setInverseBackgroundForced(true)
+                .show();
     }
 
     @Override

@@ -2,4 +2,12 @@
 
     <style name="AppTheme" parent="android:Theme.Light" />
 
+
+<style name="info_text">
+    <item name="android:padding">@dimen/info_text_padding</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textSize">@dimen/text_size_default</item>
+</style>
+
 </resources>

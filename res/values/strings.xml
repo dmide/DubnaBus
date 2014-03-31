@@ -27,6 +27,11 @@
     <string name="taxi">Такси</string>
     <string name="connection_problem">Проблема при подключении к серверу</string>
     <string name="problem">Не удается получить данные, проблемы с соединением. Попробуйте повторить действие.</string>
+    <string name="download_taxi">Не желаете скачать отдельное приложение для такси?</string>
+    <string name="do_not_show">Больше не показывать</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="taxi_app_link">https://play.google.com/store/apps/details?id=ru.dmide.dubnataxi</string>
 
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
     <!--map will only draw in dev with debug key-->

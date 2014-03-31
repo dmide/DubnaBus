@@ -19,5 +19,6 @@ public class SimpleContentActivity extends SherlockFragmentActivity {
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.webview, f).commit();
 		}
+        ModelFragment.showPromoDialog(this);
 	}
 }
