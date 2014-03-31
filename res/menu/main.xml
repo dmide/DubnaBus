@@ -1,34 +1,38 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/route_refresh"
-        android:icon="@drawable/ic_menu_refresh"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/route_refresh"/>
+            android:id="@+id/route_refresh"
+            android:icon="@drawable/ic_menu_refresh"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/route_refresh"/>
     <item
-        android:id="@+id/route_selection"
-        android:icon="@drawable/ic_menu_add"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/route_selection"/>
+            android:id="@+id/route_selection"
+            android:icon="@drawable/ic_menu_add"
+            android:showAsAction="ifRoom|withText"
+            android:title="@string/route_selection"/>
     <item
-        android:id="@+id/taxi"
-        android:showAsAction="never"
-        android:title="@string/taxi"/>
+            android:id="@+id/taxi"
+            android:showAsAction="never"
+            android:title="@string/taxi"/>
     <item
-        android:id="@+id/trainsDM"
-        android:showAsAction="never"
-        android:title="@string/trainsDM"/>
+            android:id="@+id/trainsDM"
+            android:showAsAction="never"
+            android:title="@string/trainsDM"/>
     <item
-        android:id="@+id/trainsMD"
-        android:showAsAction="never"
-        android:title="@string/trainsMD"/>
+            android:id="@+id/trainsMD"
+            android:showAsAction="never"
+            android:title="@string/trainsMD"/>
     <item
-        android:id="@+id/busesDM"
-        android:showAsAction="never"
-        android:title="@string/busesDM"/>
+            android:id="@+id/busesDM"
+            android:showAsAction="never"
+            android:title="@string/busesDM"/>
     <item
-        android:id="@+id/busesMD"
-        android:showAsAction="never"
-        android:title="@string/busesMD"/>
+            android:id="@+id/busesMD"
+            android:showAsAction="never"
+            android:title="@string/busesMD"/>
+    <item
+            android:id="@+id/about"
+            android:showAsAction="never"
+            android:title="@string/title_activity_info"/>
 
 </menu>

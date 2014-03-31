@@ -91,34 +91,38 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                 Bus.clearList();
                 DubnaBusActivity.reloadOverlays = true;
                 setUpMapIfNeeded();
-                return (true);
+                return true;
             case R.id.route_selection:
                 Intent i = new Intent(this, MenuActivity.class);
                 startActivity(i);
-                return (true);
+                return true;
             case R.id.taxi:
                 model.loadTaxiPage(getString(R.string.taxi_url));
-                return (true);
+                return true;
             case R.id.trainsDM:
                 i = new Intent(this, SimpleContentActivity.class);
                 i.putExtra(SimpleContentActivity.EXTRA_DATA, getString(R.string.trains_DM_url));
                 startActivity(i);
-                return (true);
+                return true;
             case R.id.trainsMD:
                 i = new Intent(this, SimpleContentActivity.class);
                 i.putExtra(SimpleContentActivity.EXTRA_DATA, getString(R.string.trains_MD_url));
                 startActivity(i);
-                return (true);
+                return true;
             case R.id.busesDM:
                 i = new Intent(this, SimpleContentActivity.class);
                 i.putExtra(SimpleContentActivity.EXTRA_DATA, getString(R.string.buses_DM_url));
                 startActivity(i);
-                return (true);
+                return true;
             case R.id.busesMD:
                 i = new Intent(this, SimpleContentActivity.class);
                 i.putExtra(SimpleContentActivity.EXTRA_DATA, getString(R.string.buses_MD_url));
                 startActivity(i);
-                return (true);
+                return true;
+            case R.id.about:
+                i = new Intent(this, InfoActivity.class);
+                startActivity(i);
+                return true;
         }
         return (super.onOptionsItemSelected(item));
     }
@@ -224,9 +228,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                     mMap.setOnMarkerClickListener(this);
                     mMap.setOnCameraChangeListener(this);
                     mMap.setOnInfoWindowClickListener(this);
-                    // mMap.setMyLocationEnabled(true); until Google doesn't fix
-                    // the bug
-                    // http://stackoverflow.com/questions/13756261/how-to-get-the-current-lcoation-in-google-maps-android-api-v2
                     model.loadMapRoutes();
                 }
             }

@@ -2,6 +2,9 @@
 <resources>
 
     <dimen name="info_text_padding">10dp</dimen>
+    <dimen name="info_btn_margin">10dp</dimen>
+    <dimen name="info_btn_padding">5dp</dimen>
+    <dimen name="info_btn_height">70dp</dimen>
 
     <dimen name="text_size_default">18sp</dimen>
     <dimen name="text_size_small">16sp</dimen>

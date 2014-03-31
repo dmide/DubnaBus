@@ -31,6 +31,15 @@
     <string name="do_not_show">Больше не показывать</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="title_activity_info">О программе</string>
+    <string name="info1">Приложение позволяет выбрать маршрут интересующего Вас автобуса Дубны и проследить его по карте, используя ГЛОНАСС.
+        Предложения по улучшению, добавлению возможностей, а также сведения об ошибках Вы можете направить на электронную почту.</string>
+    <string name="info2">Разработка велась без какой-либо коммерческой выгоды.</string>
+    <string name="sources">Исходный код:</string>
+    <string name="mail_to">Отправить сообщение на почту</string>
+    <string name="rate_app">Оценить на Google Play</string>
+    <string name="donate">Купить мне пива</string>
+    <string name="google_play_link">https://play.google.com/store/apps/details?id=ru.ratadubna.dubnabus</string>
     <string name="taxi_app_link">https://play.google.com/store/apps/details?id=ru.dmide.dubnataxi</string>
 
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
@@ -56,5 +65,13 @@
     <string name="bus_location_url"><![CDATA[http://ratadubna.ru/nav/schedule.php?o=1004]]></string>
     <string name="bus_type_59_remote_file">file:///android_res/drawable/busType59.png</string>
     <string name="bus_type_91_remote_file">file:///android_res/drawable/busType91.png</string>
+
+    <string-array name="donation_google_catalog_values">
+        <item>Buy me a beer!</item>
+        <item>Buy me 2 beers!</item>
+        <item>Buy me 3 beers!</item>
+        <item>Buy me 5 beers!</item>
+        <item>Buy me 10 beers!</item>
+    </string-array>
 
 </resources>
