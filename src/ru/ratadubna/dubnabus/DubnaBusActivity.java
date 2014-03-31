@@ -206,6 +206,7 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
                     .findFragmentById(R.id.map);
             mapFrag.setRetainInstance(true);
             mMap = mapFrag.getMap();
+            mMap.setMyLocationEnabled(true);
             if (mMap == null) {
                 if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != 0) {
                     Toast.makeText(this, getString(R.string.playProblems),
