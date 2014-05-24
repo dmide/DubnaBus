@@ -12,7 +12,6 @@ public class MenuActivity extends SherlockFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTheme(R.style.Theme_Sherlock_Light);
 		if ((menu = (MenuFragment) getSupportFragmentManager()
 				.findFragmentByTag(MENU)) == null) {
 			menu = new MenuFragment();

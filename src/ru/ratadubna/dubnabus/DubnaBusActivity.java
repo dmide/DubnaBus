@@ -55,7 +55,6 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
         super.onCreate(savedInstanceState);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         wrActivity = new WeakReference<DubnaBusActivity>(this);
-        setTheme(R.style.Theme_Sherlock_Light);
         model = (ModelFragment) getSupportFragmentManager()
                 .findFragmentByTag(MODEL);
         if (model == null) {

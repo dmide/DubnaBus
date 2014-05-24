@@ -3,15 +3,18 @@ package ru.ratadubna.dubnabus;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class InfoActivity extends BaseActivity {
+public class InfoActivity extends SherlockFragmentActivity {
+
+    public <T extends View> T viewById(int id){
+        return (T) findViewById(id);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
