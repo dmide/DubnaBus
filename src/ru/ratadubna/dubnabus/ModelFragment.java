@@ -78,7 +78,6 @@ public class ModelFragment extends SherlockFragment {
                 .setNegativeButton(activity.getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.finish();
                     }
                 })
                 .setInverseBackgroundForced(true)
