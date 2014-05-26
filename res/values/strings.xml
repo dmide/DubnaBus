@@ -41,6 +41,7 @@
     <string name="donate">Купить мне пива</string>
     <string name="google_play_link">https://play.google.com/store/apps/details?id=ru.ratadubna.dubnabus</string>
     <string name="taxi_app_link">https://play.google.com/store/apps/details?id=ru.dmide.dubnataxi</string>
+    <string name="taxi_app_package">ru.dmide.dubnataxi</string>
 
     <string name="release_map_key">AIzaSyBst62_tFcudzB1L1r-Z3CwaIb_3Jqqz_A</string>
     <!--map will only draw in dev with debug key-->

@@ -1,7 +1,9 @@
 package ru.ratadubna.dubnabus;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,6 +39,16 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
     private ModelFragment model;
     private SharedPreferences preferences;
 
+    public static boolean isPackageInstalled(String packagename, Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -69,8 +81,9 @@ public class DubnaBusActivity extends SherlockFragmentActivity implements
 
     @Override
     public void onBackPressed() {
-        if (!preferences.getBoolean(ModelFragment.TAXI_DIALOG_SHOWED, false)) {
-            ModelFragment.showPromoDialog(this);
+        if (!preferences.getBoolean(ModelFragment.TAXI_DIALOG_SHOWED, false) &&
+                !isPackageInstalled(getResources().getString(R.string.taxi_app_package), this)) {
+            ModelFragment.showPromoDialog(this, true);
         } else {
             super.onBackPressed();
         }

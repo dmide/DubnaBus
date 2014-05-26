@@ -56,7 +56,7 @@ public class ModelFragment extends SherlockFragment {
         }
     }
 
-    public static void showPromoDialog(final Activity activity) {
+    public static void showPromoDialog(final Activity activity, final boolean onExit) {
         View rateDialog = View.inflate(activity, R.layout.promo_dialog, null);
         CheckBox checkBox = (CheckBox) rateDialog.findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -78,6 +78,9 @@ public class ModelFragment extends SherlockFragment {
                 .setNegativeButton(activity.getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (onExit){
+                            activity.finish();
+                        }
                     }
                 })
                 .setInverseBackgroundForced(true)
