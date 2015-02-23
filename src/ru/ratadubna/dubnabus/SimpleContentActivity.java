@@ -1,6 +1,8 @@
 package ru.ratadubna.dubnabus;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -18,6 +20,10 @@ public class SimpleContentActivity extends SherlockFragmentActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.webview, f).commit();
         }
-        ModelFragment.showPromoDialog(this, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!preferences.getBoolean(ModelFragment.TAXI_DIALOG_SHOWED, false) &&
+                !DubnaBusActivity.isPackageInstalled(getResources().getString(R.string.taxi_app_package), this)) {
+            ModelFragment.showPromoDialog(this, false);
+        }
     }
 }
