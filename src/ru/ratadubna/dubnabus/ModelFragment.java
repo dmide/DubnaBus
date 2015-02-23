@@ -78,7 +78,7 @@ public class ModelFragment extends SherlockFragment {
                 .setNegativeButton(activity.getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (onExit){
+                        if (onExit) {
                             activity.finish();
                         }
                     }
@@ -227,7 +227,7 @@ public class ModelFragment extends SherlockFragment {
 
         private class BusLocationLoader implements WebHelper.Parser {
             @Override
-            public void parse(String line) throws Exception{
+            public void parse(String line) throws Exception {
                 JSONArray jsonArray = new JSONArray(line);
                 String id, time;
                 int bearing, routeNum, routeId, type;
@@ -261,35 +261,31 @@ public class ModelFragment extends SherlockFragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            try {
-                busRoutesAndMarkersTaskMutex = true;
-                descStopIdMap.clear();
-                for (BusRoute route : BusRoute.getRoutesArray()) {
+            busRoutesAndMarkersTaskMutex = true;
+            descStopIdMap.clear();
+            for (BusRoute route : BusRoute.getRoutesArray()) {
+                try {
                     if (route.isActive()) {
                         int serviceId = route.getRouteServiceId();
                         WebHelper.loadContent(
                                 new URL(getString(R.string.map_stops_url) + String.valueOf(serviceId)),
                                 new BusStopsLoader(), "56.");
                     }
+                } catch (Exception e) {
+                    this.e = e;
+                    Log.e(getClass().getSimpleName(),
+                            "Exception retrieving bus maproutes content", e);
                 }
-            } catch (Exception e) {
-                this.e = e;
-                Log.e(getClass().getSimpleName(),
-                        "Exception retrieving bus maproutes content", e);
             }
             return (null);
         }
 
         @Override
         public void onPostExecute(Void arg0) {
-            if (e == null) {
-                for (MarkerOptions options : busMarkerOptionsArray) {
-                    ((DubnaBusActivity) getActivity()).addMarker(options);
-                }
-                startLoadingBusLocations();
-            } else {
-                showProblemToast();
+            for (MarkerOptions options : busMarkerOptionsArray) {
+                ((DubnaBusActivity) getActivity()).addMarker(options);
             }
+            startLoadingBusLocations();
             busRoutesAndMarkersTaskMutex = false;
         }
 
@@ -305,8 +301,8 @@ public class ModelFragment extends SherlockFragment {
                     stop = (JSONObject) jsonArray.get(i);
                     id = Integer.valueOf((String) stop.get("id"));
                     JSONArray lc = (JSONArray) stop.get("lc");
-                    lat = Double.parseDouble((String)lc.get(0));
-                    lng = Double.parseDouble((String)lc.get(1));
+                    lat = Double.parseDouble((String) lc.get(0));
+                    lng = Double.parseDouble((String) lc.get(1));
                     name = decodeFromUtf8((String) stop.get("name"));
                     if (!descStopIdMap.containsValue(id)) {
                         busMarkerOptionsArray.add(new MarkerOptions()
@@ -371,7 +367,7 @@ public class ModelFragment extends SherlockFragment {
                     ((DubnaBusActivity) getActivity()).addRoute(options
                             .color(getColor(j)));
                     i++;
-                    j = i/2;
+                    j = i / 2;
                 }
                 startLoadingBusLocations();
             } else {
@@ -392,8 +388,8 @@ public class ModelFragment extends SherlockFragment {
                     PolylineOptions busRoutesOptions = new PolylineOptions();
                     for (int j = 0; j < subArray.length(); j++) {
                         coordinates = (JSONArray) subArray.get(j);
-                        lat = Double.parseDouble((String)coordinates.get(0));
-                        lng = Double.parseDouble((String)coordinates.get(1));
+                        lat = Double.parseDouble((String) coordinates.get(0));
+                        lng = Double.parseDouble((String) coordinates.get(1));
                         busRoutesOptions.add(new LatLng(lat, lng));
                     }
                     busRoutesOptionsArray.add(busRoutesOptions);
