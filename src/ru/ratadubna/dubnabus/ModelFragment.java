@@ -313,7 +313,7 @@ public class ModelFragment extends SherlockFragment {
                                 .position(new LatLng(lat, lng))
                                 .title(name)
                                 .icon(BitmapDescriptorFactory
-                                        .fromAsset("bustop31.png")));
+                                        .fromResource(R.drawable.bustop31)));
                         descStopIdMap.put(name, id);
                     }
                 }

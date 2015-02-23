@@ -15,7 +15,7 @@ public class Bus {
     private static float dimensions = 196;
     private static final SparseArray<String> busTypes = new SparseArray<String>();
     private static final BitmapDescriptor image = BitmapDescriptorFactory
-            .fromAsset("bus_arrow.png");
+            .fromResource(R.drawable.bus_arrow);
 
     private final String id;
     private final int type, route, routeNum;
@@ -26,10 +26,10 @@ public class Bus {
     private Marker marker = null;
     private String time = "";
 
-	static {
-		busTypes.put(59, "busType59.png");
-		busTypes.put(91, "busType91.png");
-	}
+    static {
+        busTypes.put(59, "busType59.png");
+        busTypes.put(91, "busType91.png");
+    }
 
     static void addToList(Bus bus) {
         busList.add(bus);
@@ -84,77 +84,77 @@ public class Bus {
         }
     }
 
-	Bus(String id, LatLng position, int speed, int bearing, int type,
-			int route, String time, int routeNum) {
+    Bus(String id, LatLng position, int speed, int bearing, int type,
+        int route, String time, int routeNum) {
         this.routeNum = routeNum;
-		this.time = time;
-		this.id = id;
-		this.speed = speed;
-		this.type = type;
-		this.route = route;
-		groundOverlayOptions = new GroundOverlayOptions().image(image)
-				.position(position, dimensions).bearing(bearing).zIndex(1);
-		String title = ModelFragment.NUMBER_SYMBOL + routeNum;
-		markerOptions = new MarkerOptions().position(position).title(title)
-				.icon(BitmapDescriptorFactory.fromAsset("blank.png"));
-	}
+        this.time = time;
+        this.id = id;
+        this.speed = speed;
+        this.type = type;
+        this.route = route;
+        groundOverlayOptions = new GroundOverlayOptions().image(image)
+                .position(position, dimensions).bearing(bearing).zIndex(1);
+        String title = ModelFragment.NUMBER_SYMBOL + routeNum;
+        markerOptions = new MarkerOptions().position(position).title(title)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.blank));
+    }
 
-	LatLng getPosition() {
-		return groundOverlayOptions.getLocation();
-	}
+    LatLng getPosition() {
+        return groundOverlayOptions.getLocation();
+    }
 
-	String getId() {
-		return id;
-	}
+    String getId() {
+        return id;
+    }
 
-	int getRoute() {
-		return route;
-	}
+    int getRoute() {
+        return route;
+    }
 
-	float getBearing() {
-		return groundOverlayOptions.getBearing();
-	}
+    float getBearing() {
+        return groundOverlayOptions.getBearing();
+    }
 
-	GroundOverlayOptions getGroundOverlayOptions() {
-		return groundOverlayOptions;
-	}
+    GroundOverlayOptions getGroundOverlayOptions() {
+        return groundOverlayOptions;
+    }
 
-	MarkerOptions getMarkerOptions() {
-		return markerOptions;
-	}
+    MarkerOptions getMarkerOptions() {
+        return markerOptions;
+    }
 
-	void setOverlay(GroundOverlay overlay) {
-		this.overlay = overlay;
-		this.overlay.setDimensions(dimensions);
-		activeBuses.add(id);
-	}
+    void setOverlay(GroundOverlay overlay) {
+        this.overlay = overlay;
+        this.overlay.setDimensions(dimensions);
+        activeBuses.add(id);
+    }
 
-	void setMarker(Marker marker) {
-		this.marker = marker;
-	}
+    void setMarker(Marker marker) {
+        this.marker = marker;
+    }
 
-	void updateOverlay() {
-		overlay.setPosition(groundOverlayOptions.getLocation());
-		overlay.setBearing(groundOverlayOptions.getBearing());
-	}
+    void updateOverlay() {
+        overlay.setPosition(groundOverlayOptions.getLocation());
+        overlay.setBearing(groundOverlayOptions.getBearing());
+    }
 
-	void updateMarker() {
-		marker.setPosition(groundOverlayOptions.getLocation());
-	}
+    void updateMarker() {
+        marker.setPosition(groundOverlayOptions.getLocation());
+    }
 
-	boolean isActive() {
-		return (overlay != null);
-	}
+    boolean isActive() {
+        return (overlay != null);
+    }
 
-	String getPic() {
-		return busTypes.get(type);
-	}
+    String getPic() {
+        return busTypes.get(type);
+    }
 
-	int getSpeed() {
-		return speed;
-	}
+    int getSpeed() {
+        return speed;
+    }
 
-	String getTime() {
-		return time;
-	}
+    String getTime() {
+        return time;
+    }
 }
