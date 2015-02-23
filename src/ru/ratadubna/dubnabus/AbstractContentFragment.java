@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebViewClient;
 
 abstract public class AbstractContentFragment extends WebViewFragment {
     abstract String getPage();
@@ -23,6 +24,7 @@ abstract public class AbstractContentFragment extends WebViewFragment {
                              Bundle savedInstanceState) {
         View result = super.onCreateView(inflater, container,
                 savedInstanceState);
+        getWebView().setWebViewClient(new WebViewClient());
         getWebView().getSettings().setJavaScriptEnabled(true);
         getWebView().getSettings().setSupportZoom(true);
         getWebView().getSettings().setBuiltInZoomControls(true);
